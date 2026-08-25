@@ -7,13 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { paths } from "@/api.d"
+import type { ChartType } from "@/types/chart"
 import { $api } from "@/api"
 import { Triangle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
-
-type ChartType =
-  paths["/charts/{chart_type}"]["get"]["parameters"]["path"]["chart_type"];
 
 type ChartTableProps = {
   chartType: ChartType;
