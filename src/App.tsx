@@ -30,7 +30,7 @@ function App() {
           ))}
         </TabsList>
         {chartTypes.map((type) => (
-          <TabsContent key={type} value={type} className="w-full border rounded-xl">
+          <TabsContent key={type} value={type} className="w-full">
             <ChartTable chartType={type} />
           </TabsContent>
         ))}

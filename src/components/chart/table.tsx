@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  // TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -11,65 +10,68 @@ import type { ChartType } from "@/types/chart"
 import { $api } from "@/api"
 import { Triangle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
+import { getChartRankAt } from "@/utils/format"
 
 type ChartTableProps = {
   chartType: ChartType;
 };
 
-function ChartTable(ChartTableProps: ChartTableProps) {
+function ChartTable(chartTableProps: ChartTableProps) {
   const { data, isLoading, error } = $api.useQuery(
     "get",
     "/charts/{chart_type}",
     {
       params: {
         path: {
-          chart_type: ChartTableProps.chartType,
+          chart_type: chartTableProps.chartType,
         },
       }
     }
   )
-  return (
-    <Table>
-      {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-      <TableHeader>
-        <TableRow>
-          <TableHead className="pl-4 w-10 text-center">Rank</TableHead>
-          <TableHead className="pl-14">Song</TableHead>
-          <TableHead className="pr-4 w-10 text-center">Change</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data?.entries.map((item, index) => {
-          let rankChangeBadge = <Badge className="bg-gray-200 text-gray-400 text-sm text-center min-w-11">
-            -
-          </Badge>
-          if (item.snapshot.rank_type == "UP") {
-            rankChangeBadge = <Badge className="bg-red-200 text-red-400 text-sm text-center min-w-11">
-              <Triangle fill="currentColor" />
-              {item.snapshot.rank_gap}
+  return <>
+    <div className="mx-auto w-min whitespace-nowrap text-gray-500 font-semibold">{data ? getChartRankAt(data.entries[0].snapshot.rank_day, data.entries[0].snapshot.rank_hour, data.fetched_at) : "----.--.-- --:-- KST"}</div>
+    <div className="w-full border rounded-xl mt-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="pl-4 w-10 text-center">Rank</TableHead>
+            <TableHead className="pl-14">Song</TableHead>
+            <TableHead className="pr-4 w-10 text-center">Change</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data?.entries.map((item, index) => {
+            let rankChangeBadge = <Badge className="bg-gray-200 text-gray-400 text-sm text-center min-w-11">
+              -
             </Badge>
-          } else if (item.snapshot.rank_type == "DOWN") {
-            rankChangeBadge = <Badge className="bg-green-200 text-green-400 text-sm text-center min-w-11">
-              <Triangle fill="currentColor" className="rotate-180" />
-              {item.snapshot.rank_gap}
-            </Badge>
-          }
-          return (
-            <TableRow key={item.song.song_id}>
-              <TableCell className="text-center">{item.snapshot.current_rank}</TableCell>
-              <TableCell>
-                <img src={`//wsrv.nl?url=${item.song.album_cover_url?.split("?")[0]}&w=100&h=100&output=webp&il`} className="inline-block mr-2 w-10 h-10 rounded-md" />
-                {item.song.title}
-              </TableCell>
-              <TableCell className="text-center">
-                {rankChangeBadge}
-              </TableCell>
-            </TableRow>
-          )
-        })}
-      </TableBody>
-    </Table>
-  )
+            if (item.snapshot.rank_type === "UP") {
+              rankChangeBadge = <Badge className="bg-red-200 text-red-400 text-sm text-center min-w-11">
+                <Triangle fill="currentColor" />
+                {item.snapshot.rank_gap}
+              </Badge>
+            } else if (item.snapshot.rank_type === "DOWN") {
+              rankChangeBadge = <Badge className="bg-green-200 text-green-400 text-sm text-center min-w-11">
+                <Triangle fill="currentColor" className="rotate-180" />
+                {item.snapshot.rank_gap}
+              </Badge>
+            }
+            return (
+              <TableRow key={item.song.song_id}>
+                <TableCell className="text-center text-lg">{item.snapshot.current_rank}</TableCell>
+                <TableCell>
+                  <img src={`//wsrv.nl?url=${item.song.album_cover_url?.split("?")[0]}&w=100&h=100&output=webp&il`} className="inline-block mr-2 w-10 h-10 rounded-md" />
+                  {item.song.title}
+                </TableCell>
+                <TableCell className="text-center">
+                  {rankChangeBadge}
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  </>
 }
 
 export default ChartTable
