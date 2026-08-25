@@ -1025,6 +1025,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.102.3":
+  version: 5.102.3
+  resolution: "@tanstack/query-core@npm:5.102.3"
+  checksum: 10c0/9d61088808decfc62f1aaacfa4fd29889d8a70bcfda7061790f0fd263388f65d85b1df80d3656ee5f8cd1339432034cd8a488d1efa995a2bfffa07acbce4d508
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.102.3":
+  version: 5.102.3
+  resolution: "@tanstack/react-query@npm:5.102.3"
+  dependencies:
+    "@tanstack/query-core": "npm:5.102.3"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10c0/d5f3b1572085a76955044435a0d7733a66c1a1a5363a8dbe4a14a1ccb42d29a679cc60cda35a603fe6464c981f44bc48c26a47891b9557ea3ca13b801cba1f66
+  languageName: node
+  linkType: hard
+
 "@ts-morph/common@npm:~0.27.0":
   version: 0.27.0
   resolution: "@ts-morph/common@npm:0.27.0"
@@ -4017,6 +4035,7 @@ __metadata:
     "@fontsource-variable/geist": "npm:^5.3.0"
     "@fontsource-variable/inter": "npm:^5.3.0"
     "@tailwindcss/vite": "npm:^4.3.3"
+    "@tanstack/react-query": "npm:^5.102.3"
     "@types/node": "npm:^24.13.3"
     "@types/react": "npm:^19.2.17"
     "@types/react-dom": "npm:^19.2.3"
