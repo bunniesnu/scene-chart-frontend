@@ -1,21 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import ChartTable from "@/components/chart/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { ChartType } from "@/types/chart"
+import { chartTypeLabels, chartTypes } from "@/types/chart"
 
 export const Route = createFileRoute('/')({
   component: Index,
 })
-
-const chartTypes: ChartType[] = ["top100", "realtime", "hot100", "daily", "weekly"]
-
-const chartTypeLabels: Record<ChartType, string> = {
-  top100: "Top100",
-  realtime: "Realtime",
-  hot100: "Hot100",
-  daily: "Daily",
-  weekly: "Weekly",
-}
 
 function Index() {
   return <>
