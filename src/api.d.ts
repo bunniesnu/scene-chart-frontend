@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/charts/history/{chart_type}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Chart History */
+        get: operations["get_chart_history_charts_history__chart_type__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/debug/melon-db": {
         parameters: {
             query?: never;
@@ -46,6 +63,27 @@ export interface components {
         ChartEntryResponse: {
             song: components["schemas"]["SongResponse"];
             snapshot: components["schemas"]["SongChartSnapshotResponse"];
+        };
+        /** ChartHistoryEntryResponse */
+        ChartHistoryEntryResponse: {
+            song: components["schemas"]["SongResponse"];
+            /** Snapshots */
+            snapshots: components["schemas"]["ChartHistorySnapshotResponse"][];
+        };
+        /** ChartHistoryResponse */
+        ChartHistoryResponse: {
+            chart_type: components["schemas"]["ChartType"];
+            /** Entries */
+            entries: components["schemas"]["ChartHistoryEntryResponse"][];
+        };
+        /** ChartHistorySnapshotResponse */
+        ChartHistorySnapshotResponse: {
+            /** Current Rank */
+            current_rank: number;
+            /** Rank Day */
+            rank_day: string | null;
+            /** Rank Hour */
+            rank_hour: string | null;
         };
         /** ChartResponse */
         ChartResponse: {
@@ -154,6 +192,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChartResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_chart_history_charts_history__chart_type__get: {
+        parameters: {
+            query: {
+                songs: string[];
+            };
+            header?: never;
+            path: {
+                chart_type: components["schemas"]["ChartType"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChartHistoryResponse"];
                 };
             };
             /** @description Validation Error */
