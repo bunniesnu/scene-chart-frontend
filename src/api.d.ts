@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/artist/songs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Artist Songs */
+        get: operations["get_artist_songs_artist_songs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/charts/{chart_type}": {
         parameters: {
             query?: never;
@@ -59,6 +76,13 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ArtistSongsResponse */
+        ArtistSongsResponse: {
+            /** Artist Id */
+            artist_id: string;
+            /** Songs */
+            songs: components["schemas"]["SongResponse"][];
+        };
         /** ChartEntryResponse */
         ChartEntryResponse: {
             song: components["schemas"]["SongResponse"];
@@ -174,6 +198,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    get_artist_songs_artist_songs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArtistSongsResponse"];
+                };
+            };
+        };
+    };
     get_latest_chart_charts__chart_type__get: {
         parameters: {
             query?: never;
