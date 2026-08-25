@@ -10,6 +10,8 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox"
+import { Bar, BarChart } from "recharts"
+import { ChartContainer } from "@/components/ui/chart"
 import { defaultChartType } from '@/const';
 
 export const Route = createFileRoute('/history')({
@@ -48,5 +50,14 @@ function RouteComponent() {
         </ComboboxContent>
       </Combobox>
     </div>
+    <ChartContainer config={{
+      current_rank: {
+        label: "Rank",
+      },
+    }} className="min-h-50 w-full">
+      <BarChart accessibilityLayer data={data?.entries[0]?.snapshots}>
+        <Bar dataKey="current_rank" radius={4} />
+      </BarChart>
+    </ChartContainer>
   </div>
 }
