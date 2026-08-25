@@ -33,9 +33,9 @@ function ChartTable(ChartTableProps: ChartTableProps) {
       {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
       <TableHeader>
         <TableRow>
-          <TableHead className="w-10 text-center">Rank</TableHead>
+          <TableHead className="pl-4 w-10 text-center">Rank</TableHead>
           <TableHead className="pl-14">Song</TableHead>
-          <TableHead className="w-10 text-center">Change</TableHead>
+          <TableHead className="pr-4 w-10 text-center">Change</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
