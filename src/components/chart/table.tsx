@@ -50,7 +50,8 @@ function ChartTable(ChartTableProps: ChartTableProps) {
             </Badge>
           } else if (item.snapshot.rank_type == "DOWN") {
             rankChangeBadge = <Badge className="bg-green-200 text-green-400 text-sm text-center min-w-11">
-              <Triangle fill="currentColor" />
+              <Triangle fill="currentColor" className="rotate-180" />
+              {item.snapshot.rank_gap}
             </Badge>
           }
           return (
