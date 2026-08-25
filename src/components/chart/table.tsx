@@ -11,6 +11,7 @@ import { $api } from "@/api"
 import { Triangle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { getChartRankAt } from "@/utils/format"
+import { getImgUrl } from "@/utils/img";
 
 type ChartTableProps = {
   chartType: ChartType;
@@ -63,7 +64,7 @@ function ChartTable(chartTableProps: ChartTableProps) {
                 <TableRow key={item.song.song_id}>
                   <TableCell className="text-center text-lg">{item.snapshot.current_rank}</TableCell>
                   <TableCell>
-                    <img src={`//wsrv.nl?url=${item.song.album_cover_url?.split("?")[0]}&w=100&h=100&output=webp&il`} className="inline-block mr-2 w-10 h-10 rounded-md" />
+                    {item.song.album_cover_url && <img src={getImgUrl(item.song.album_cover_url)} className="inline-block mr-2 w-10 h-10 rounded-md" />}
                     {item.song.title}
                   </TableCell>
                   <TableCell className="text-center">
