@@ -1,4 +1,4 @@
-import type { HistoryPoint } from "@/types/chart";
+import type { ChartType } from "@/types/chart";
 import {
   CartesianGrid,
   Line,
@@ -8,9 +8,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { $api } from "@/api"
 
 type Props = {
-  data: HistoryPoint[];
+  chartType: ChartType;
 };
 
 const TIME_ZONE = "Asia/Seoul";
@@ -46,15 +47,30 @@ function formatTooltip(value: unknown) {
   return [`${value}`, "Rank"];
 }
 
-export function RankHistoryChart({ data }: Props) {
-  const chartData = data
+export function RankHistoryChart({ chartType }: Props) {
+  const { data, isLoading, error } = $api.useQuery(
+    "get",
+    "/charts/history/{chart_type}",
+    {
+      params: {
+        path: {
+          chart_type: chartType,
+        },
+        query: {
+          songs: ["37928381"]
+        }
+      }
+    }
+  )
+  const chartData = (data && data.entries.length > 0) ? data.entries[0].snapshots
     .map((point) => ({
       ...point,
       timestamp: new Date(
         `${point.rank_day} ${point.rank_hour}`,
       ).getTime(),
     }))
-    .sort((a, b) => a.timestamp - b.timestamp);
+    .sort((a, b) => a.timestamp - b.timestamp)
+    : [];
 
   if (chartData.length === 0) {
     return null;
