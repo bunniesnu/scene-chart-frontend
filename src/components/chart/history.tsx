@@ -48,7 +48,7 @@ function formatTooltip(value: unknown) {
     return [String(value), "Rank"];
   }
 
-  return [`${value}위`, "Rank"];
+  return [`${value}`, "Rank"];
 }
 
 export function RankHistoryChart({ data }: Props) {
@@ -96,7 +96,7 @@ export function RankHistoryChart({ data }: Props) {
       length:
         Math.floor((yAxisMax - 1) / tickStep) + 1,
     },
-    (_, index) => 1 + index * tickStep,
+    (_, index) => index * tickStep,
   );
 
   return (

@@ -104,8 +104,11 @@ export interface components {
         ChartHistorySnapshotResponse: {
             /** Current Rank */
             current_rank: number;
-            /** Rank Day */
-            rank_day: string | null;
+            /**
+             * Rank Day
+             * Format: date
+             */
+            rank_day: string;
             /** Rank Hour */
             rank_hour: string | null;
         };
@@ -146,8 +149,11 @@ export interface components {
              * Format: date-time
              */
             fetched_at: string;
-            /** Rank Day */
-            rank_day: string | null;
+            /**
+             * Rank Day
+             * Format: date
+             */
+            rank_day: string;
             /** Rank Hour */
             rank_hour: string | null;
             /** Current Rank */
