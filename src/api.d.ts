@@ -97,8 +97,7 @@ export interface components {
         /** ChartHistoryResponse */
         ChartHistoryResponse: {
             chart_type: components["schemas"]["ChartType"];
-            /** Entries */
-            entries: components["schemas"]["ChartHistoryEntryResponse"][];
+            entry: components["schemas"]["ChartHistoryEntryResponse"];
         };
         /** ChartHistorySnapshotResponse */
         ChartHistorySnapshotResponse: {
@@ -258,7 +257,7 @@ export interface operations {
     get_chart_history_charts_history__chart_type__get: {
         parameters: {
             query: {
-                songs: string[];
+                songId: string;
             };
             header?: never;
             path: {

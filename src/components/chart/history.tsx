@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { $api } from "@/api"
+import { useQueries } from "@tanstack/react-query";
 
 type Props = {
   songIds: string[];
@@ -50,28 +51,35 @@ function formatTick(value: number, includeTime: boolean = true) {
 }
 
 export function RankHistoryChart({ songIds, chartType }: Props) {
-  const history = $api.useQuery(
-    "get",
-    "/charts/history/{chart_type}",
-    {
-      params: {
-        path: {
-          chart_type: chartType,
-        },
-        query: {
-          songs: songIds
+  const history = useQueries({
+    queries: songIds.map((songId) =>
+      $api.queryOptions(
+        "get",
+        "/charts/history/{chart_type}",
+        {
+          params: {
+            path: {
+              chart_type: chartType,
+            },
+            query: {
+              songId: songId
+            }
+          }
         }
-      }
-    }
-  )
+      )
+    ),
+  });
 
   const chartData: ChartDataPoint[] = Object.values(
-    history.data?.entries.reduce<
+    history.reduce<
       Record<number, ChartDataPoint>
     >((acc, entry) => {
-      const songId = entry.song.song_id;
+      if (!entry.data?.entry) {
+        return acc;
+      }
+      const songId = entry.data.entry.song.song_id;
 
-      for (const point of entry.snapshots) {
+      for (const point of entry.data.entry.snapshots) {
         const timestamp = new Date(
           point.rank_hour !== null ? `${point.rank_day} ${point.rank_hour}` : point.rank_day,
         ).getTime();
@@ -135,8 +143,7 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
     songIds.map((songId, index) => [
       songId,
       {
-        label: history.data?.entries.find((entry) => entry.song.song_id === songId)
-          ?.song.title ?? songId,
+        label: history.find((entry) => entry.data?.entry?.song.song_id === songId)?.data?.entry?.song.title ?? songId,
         color: `hsl(${(index * 137.5) % 360}, 70%, 50%)`,
       },
     ]),
