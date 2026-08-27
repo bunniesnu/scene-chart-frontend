@@ -1,10 +1,13 @@
 import type { ChartType } from "@/types/chart";
 import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
   CartesianGrid,
   Line,
   LineChart,
-  ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
@@ -13,6 +16,11 @@ import { $api } from "@/api"
 type Props = {
   songIds: string[];
   chartType: ChartType;
+};
+
+type ChartDataPoint = {
+  timestamp: number;
+  snapshots: Record<string, number>;
 };
 
 const TIME_ZONE = "Asia/Seoul";
@@ -63,26 +71,41 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
       }
     }
   )
-  const chartData = (history.data && history.data.entries.length > 0) ? history.data.entries.map(
-    (entry) => (
-      {
-        songId: entry.song.song_id,
-        snapshots: entry.snapshots.map((point) => ({
-          ...point,
-          timestamp: new Date(
-            `${point.rank_day} ${point.rank_hour}`,
-          ).getTime(),
-        }))
-        .sort((a, b) => a.timestamp - b.timestamp)
+
+  const chartData: ChartDataPoint[] = Object.values(
+    history.data?.entries.reduce<
+      Record<number, ChartDataPoint>
+    >((acc, entry) => {
+      const songId = entry.song.song_id;
+
+      for (const point of entry.snapshots) {
+        const timestamp = new Date(
+          `${point.rank_day} ${point.rank_hour}`,
+        ).getTime();
+
+        if (!acc[timestamp]) {
+          acc[timestamp] = {
+            timestamp,
+            snapshots: {},
+          };
+        }
+
+        acc[timestamp].snapshots[songId] =
+          point.current_rank;
       }
-    )): [];
+
+      return acc;
+    }, {}) ?? {},
+  ).sort((a, b) => a.timestamp - b.timestamp);
 
   if (chartData.length === 0) {
     return null;
   }
 
   const maxRank = Math.max(
-    ...chartData.map((entry) => Math.max(...entry.snapshots.map((point) => point.current_rank))),
+    ...chartData.flatMap((entry) =>
+      Object.values(entry.snapshots),
+    ),
   );
 
   const yAxisMax =
@@ -116,9 +139,9 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
   );
 
   return (
-    <ResponsiveContainer
-      width="100%"
-      height={400}
+    <ChartContainer
+      config={{}}
+      className="h-100 w-full"
     >
       <LineChart
         data={chartData}
@@ -155,35 +178,29 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
           width={45}
         />
 
-        <Tooltip
-          labelFormatter={(value) =>
-            new Intl.DateTimeFormat("ko-KR", {
-              timeZone: TIME_ZONE,
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              hourCycle: "h23",
-            }).format(new Date(Number(value)))
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              labelKey="timestamp"
+              formatter={formatTooltip}
+            />
           }
-          formatter={formatTooltip}
         />
 
-        {chartData.map((entry) => (
+        {songIds.map((songId, index) => (
           <Line
-            key={entry.songId}
+            key={songId}
             type="monotone"
-            dataKey="current_rank"
-            data={entry.snapshots}
-            name={entry.songId}
-            stroke={`hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`}
+            dataKey={`snapshots.${songId}`}
+            name={songId}
+            stroke={`hsl(${(index * 137.5) % 360}, 70%, 50%)`}
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 4 }}
+            connectNulls={false}
           />
         ))}
       </LineChart>
-    </ResponsiveContainer>
+    </ChartContainer>
   );
 }
