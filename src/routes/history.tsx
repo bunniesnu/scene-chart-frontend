@@ -10,8 +10,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox"
-import { Bar, BarChart } from "recharts"
-import { ChartContainer } from "@/components/ui/chart"
+import { RankHistoryChart } from '@/components/chart/history';
 import { defaultChartType } from '@/const';
 
 export const Route = createFileRoute('/history')({
@@ -34,7 +33,7 @@ function RouteComponent() {
       }
     }
   )
-  return <div className="w-full max-w-xl flex flex-col items-center justify-center gap-4 p-4">
+  return <div className="w-full max-w-3xl flex flex-col items-center justify-center gap-4 p-4">
     <div className="flex items-center gap-4">
       <Combobox items={chartTypes} defaultValue={defaultChartType} itemToStringLabel={(value) => value ? chartTypeLabels[value] : ""} onValueChange={(value: ChartType | null) => setChartType(value ? value : defaultChartType)}>
         <ComboboxInput placeholder="Chart Type" />
@@ -50,14 +49,6 @@ function RouteComponent() {
         </ComboboxContent>
       </Combobox>
     </div>
-    <ChartContainer config={{
-      current_rank: {
-        label: "Rank",
-      },
-    }} className="min-h-50 w-full">
-      <BarChart accessibilityLayer data={data?.entries[0]?.snapshots}>
-        <Bar dataKey="current_rank" radius={4} />
-      </BarChart>
-    </ChartContainer>
+    <RankHistoryChart data={data?.entries[0].snapshots ?? []} />
   </div>
 }
