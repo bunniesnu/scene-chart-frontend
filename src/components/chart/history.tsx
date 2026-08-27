@@ -25,7 +25,7 @@ type ChartDataPoint = {
 
 const TIME_ZONE = "Asia/Seoul";
 
-function formatTick(value: number) {
+function formatTick(value: number, includeTime: boolean = true) {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: TIME_ZONE,
     year: "numeric",
@@ -46,7 +46,7 @@ function formatTick(value: number) {
   const minute = get("minute");
 
   // return `${year}-${month}-${day} ${hour}:${minute}`;
-  return `${month}-${day} ${hour}:${minute}`;
+  return includeTime ? `${month}-${day} ${hour}:${minute}` : `${year}-${month}-${day}`;
 }
 
 export function RankHistoryChart({ songIds, chartType }: Props) {
@@ -73,7 +73,7 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
 
       for (const point of entry.snapshots) {
         const timestamp = new Date(
-          `${point.rank_day} ${point.rank_hour}`,
+          point.rank_hour !== null ? `${point.rank_day} ${point.rank_hour}` : point.rank_day,
         ).getTime();
 
         if (!acc[timestamp]) {
@@ -130,6 +130,7 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
     },
     (_, index) => index * tickStep,
   );
+
   const chartConfig = Object.fromEntries(
     songIds.map((songId, index) => [
       songId,
@@ -140,6 +141,8 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
       },
     ]),
   );
+
+  const showChartTime = chartType !== "daily" && chartType !== "weekly";
 
   return (
     <ChartContainer
@@ -166,7 +169,7 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
           scale="time"
           domain={["dataMin", "dataMax"]}
           minTickGap={50}
-          tickFormatter={formatTick}
+          tickFormatter={(value) => formatTick(value, showChartTime)}
           angle={-30}
           textAnchor="end"
           height={65}
@@ -187,7 +190,7 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
               labelKey="timestamp"
               labelFormatter={(_, payload) =>
                 payload?.[0]?.payload?.timestamp
-                  ? formatTick(payload[0].payload.timestamp)
+                  ? formatTick(payload[0].payload.timestamp, showChartTime)
                   : ""
               }
             />
