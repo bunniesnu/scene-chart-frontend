@@ -11,6 +11,7 @@ import {
 import { $api } from "@/api"
 
 type Props = {
+  songIds: string[];
   chartType: ChartType;
 };
 
@@ -47,7 +48,7 @@ function formatTooltip(value: unknown) {
   return [`${value}`, "Rank"];
 }
 
-export function RankHistoryChart({ chartType }: Props) {
+export function RankHistoryChart({ songIds, chartType }: Props) {
   const history = $api.useQuery(
     "get",
     "/charts/history/{chart_type}",
@@ -57,27 +58,31 @@ export function RankHistoryChart({ chartType }: Props) {
           chart_type: chartType,
         },
         query: {
-          songs: ["37928381"]
+          songs: songIds
         }
       }
     }
   )
-  const chartData = (history.data && history.data.entries.length > 0) ? history.data.entries[0].snapshots
-    .map((point) => ({
-      ...point,
-      timestamp: new Date(
-        `${point.rank_day} ${point.rank_hour}`,
-      ).getTime(),
-    }))
-    .sort((a, b) => a.timestamp - b.timestamp)
-    : [];
+  const chartData = (history.data && history.data.entries.length > 0) ? history.data.entries.map(
+    (entry) => (
+      {
+        songId: entry.song.song_id,
+        snapshots: entry.snapshots.map((point) => ({
+          ...point,
+          timestamp: new Date(
+            `${point.rank_day} ${point.rank_hour}`,
+          ).getTime(),
+        }))
+        .sort((a, b) => a.timestamp - b.timestamp)
+      }
+    )): [];
 
   if (chartData.length === 0) {
     return null;
   }
 
   const maxRank = Math.max(
-    ...chartData.map((point) => point.current_rank),
+    ...chartData.map((entry) => Math.max(...entry.snapshots.map((point) => point.current_rank))),
   );
 
   const yAxisMax =
@@ -165,14 +170,19 @@ export function RankHistoryChart({ chartType }: Props) {
           formatter={formatTooltip}
         />
 
-        <Line
-          type="monotone"
-          dataKey="current_rank"
-          stroke="currentColor"
-          strokeWidth={2}
-          dot={false}
-          activeDot={{ r: 4 }}
-        />
+        {chartData.map((entry) => (
+          <Line
+            key={entry.songId}
+            type="monotone"
+            dataKey="current_rank"
+            data={entry.snapshots}
+            name={entry.songId}
+            stroke={`hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`}
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4 }}
+          />
+        ))}
       </LineChart>
     </ResponsiveContainer>
   );

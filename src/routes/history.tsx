@@ -21,7 +21,12 @@ function RouteComponent() {
     "get",
     "/artist/songs",
   )
-  const [selectedSongs, setSelectedSongs] = useState<string[]>([])
+  const [selectedSongs, setSelectedSongs] = useState<string[]>([
+    "37928381",
+    "602450078",
+    "39231685",
+    "601719493"
+  ])
   return <Tabs className="w-full max-w-3xl flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
       <TabsList>
         {chartTypes.map((type) => (
@@ -43,7 +48,7 @@ function RouteComponent() {
       />
       {chartTypes.map((type) => (
         <TabsContent key={type} value={type} className="w-full">
-          <RankHistoryChart chartType={type} />
+          <RankHistoryChart songIds={selectedSongs} chartType={type} />
         </TabsContent>
       ))}
     </Tabs>
