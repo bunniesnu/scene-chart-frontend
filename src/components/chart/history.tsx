@@ -17,6 +17,8 @@ import { useQueries } from "@tanstack/react-query";
 type Props = {
   songIds: string[];
   chartType: ChartType;
+  dateFrom: Date;
+  dateTo: Date;
 };
 
 type ChartDataPoint = {
@@ -50,7 +52,7 @@ function formatTick(value: number, includeTime: boolean = true) {
   return includeTime ? `${month}-${day} ${hour}:${minute}` : `${year}-${month}-${day}`;
 }
 
-export function RankHistoryChart({ songIds, chartType }: Props) {
+export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props) {
   const history = useQueries({
     queries: songIds.map((songId) =>
       $api.queryOptions(
@@ -62,7 +64,9 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
               chart_type: chartType,
             },
             query: {
-              songId: songId
+              songId: songId,
+              from: dateFrom.toISOString().split('T')[0], 
+              to: dateTo.toISOString().split('T')[0],
             }
           }
         }

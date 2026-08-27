@@ -1,3 +1,4 @@
+import { addWeeks } from "date-fns"
 import { createFileRoute } from '@tanstack/react-router'
 import { chartTypeLabels, chartTypes } from "@/types/chart"
 import {
@@ -23,6 +24,8 @@ function RouteComponent() {
     "get",
     "/artist/songs",
   )
+  const [dateFrom, setDateFrom] = useState<Date>(addWeeks(new Date(), -1))
+  const [dateTo, setDateTo] = useState<Date>(new Date())
   const [selectedSongs, setSelectedSongs] = useState<string[]>(defaultSelectedSongsForHistory)
   return <Tabs className="w-full max-w-3xl flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
       <TabsList>
@@ -44,13 +47,18 @@ function RouteComponent() {
             }
           }}
         />
-        <DatePickerWithRange />
+        <DatePickerWithRange
+          from={dateFrom}
+          to={dateTo}
+          onFromChange={setDateFrom}
+          onToChange={setDateTo}
+        />
       </div>
       {chartTypes.map((type) => (
         <TabsContent key={type} value={type} className="w-full">
           <Card size="sm" className="w-full">
             <CardContent>
-              <RankHistoryChart songIds={selectedSongs} chartType={type} />
+              <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />
             </CardContent>
           </Card>
         </TabsContent>

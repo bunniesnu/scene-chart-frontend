@@ -13,9 +13,16 @@ import {
 } from "@/components/ui/popover"
 import { Field } from "@/components/ui/field"
 
-export function DatePickerWithRange() {
-  const [from, setFrom] = React.useState<Date | undefined>()
-  const [to, setTo] = React.useState<Date | undefined>()
+type DatePickerWithRangeProps = {
+  from: Date
+  to: Date
+  onFromChange: (date: Date) => void
+  onToChange: (date: Date) => void
+}
+
+export function DatePickerWithRange(props: DatePickerWithRangeProps) {
+  const [from, setFrom] = React.useState<Date>(props.from)
+  const [to, setTo] = React.useState<Date>(props.to)
 
   return (
     <Field className="w-fit" orientation="horizontal">
@@ -45,6 +52,7 @@ export function DatePickerWithRange() {
                 selected={from}
                 onSelect={setFrom}
                 captionLayout="dropdown"
+                required
               />
             </div>
 
@@ -59,6 +67,7 @@ export function DatePickerWithRange() {
                 selected={to}
                 onSelect={setTo}
                 captionLayout="dropdown"
+                required
               />
             </div>
           </div>
@@ -66,6 +75,12 @@ export function DatePickerWithRange() {
       </Popover>
       <Button
         variant={from && to && from < to ? "default" : "destructive"}
+        onClick={() => {
+          if (from && to && from < to) {
+            props.onFromChange(from)
+            props.onToChange(to)
+          }
+        }}
       >
         Apply
       </Button>
