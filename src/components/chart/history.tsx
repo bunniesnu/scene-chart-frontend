@@ -1,3 +1,4 @@
+import type { HistoryPoint } from "@/types/chart";
 import {
   CartesianGrid,
   Line,
@@ -8,14 +9,8 @@ import {
   YAxis,
 } from "recharts";
 
-type RankPoint = {
-  rank_day: string;
-  rank_hour: string;
-  current_rank: number;
-};
-
 type Props = {
-  data: RankPoint[];
+  data: HistoryPoint[];
 };
 
 const TIME_ZONE = "Asia/Seoul";
