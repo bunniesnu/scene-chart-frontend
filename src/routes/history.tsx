@@ -7,7 +7,7 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { RankHistoryChart } from '@/components/chart/history';
-import { defaultChartType } from '@/const';
+import { defaultChartType, defaultSelectedSongsForHistory } from '@/const';
 import { useState } from 'react';
 import { SongSelector } from '@/components/song/selector';
 import { $api } from '@/api';
@@ -22,12 +22,7 @@ function RouteComponent() {
     "get",
     "/artist/songs",
   )
-  const [selectedSongs, setSelectedSongs] = useState<string[]>([
-    "37928381",
-    "602450078",
-    "39231685",
-    "601719493"
-  ])
+  const [selectedSongs, setSelectedSongs] = useState<string[]>(defaultSelectedSongsForHistory)
   return <Tabs className="w-full max-w-3xl flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
       <TabsList>
         {chartTypes.map((type) => (
