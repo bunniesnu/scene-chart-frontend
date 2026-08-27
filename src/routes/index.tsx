@@ -9,20 +9,18 @@ export const Route = createFileRoute('/')({
 })
 
 function Index() {
-  return <>
-    <Tabs className="w-full max-w-xl flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
-      <TabsList>
-        {chartTypes.map((type) => (
-          <TabsTrigger key={type} value={type}>
-            {chartTypeLabels[type]}
-          </TabsTrigger>
-        ))}
-      </TabsList>
+return <Tabs className="w-full max-w-xl flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
+    <TabsList>
       {chartTypes.map((type) => (
-        <TabsContent key={type} value={type} className="w-full">
-          <ChartTable chartType={type} />
-        </TabsContent>
+        <TabsTrigger key={type} value={type}>
+          {chartTypeLabels[type]}
+        </TabsTrigger>
       ))}
-    </Tabs>
-  </>
+    </TabsList>
+    {chartTypes.map((type) => (
+      <TabsContent key={type} value={type} className="w-full">
+        <ChartTable chartType={type} />
+      </TabsContent>
+    ))}
+  </Tabs>
 }

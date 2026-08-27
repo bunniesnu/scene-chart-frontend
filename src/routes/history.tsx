@@ -3,13 +3,11 @@ import { chartTypeLabels, chartTypes, type ChartType } from "@/types/chart"
 import { $api } from "@/api"
 import { useState } from 'react';
 import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox"
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
 import { RankHistoryChart } from '@/components/chart/history';
 import { defaultChartType } from '@/const';
 
@@ -33,22 +31,18 @@ function RouteComponent() {
       }
     }
   )
-  return <div className="w-full max-w-3xl flex flex-col items-center justify-center gap-4 p-4">
-    <div className="flex items-center gap-4">
-      <Combobox items={chartTypes} defaultValue={defaultChartType} itemToStringLabel={(value) => value ? chartTypeLabels[value] : ""} onValueChange={(value: ChartType | null) => setChartType(value ? value : defaultChartType)}>
-        <ComboboxInput placeholder="Chart Type" />
-        <ComboboxContent>
-          <ComboboxEmpty>No items found.</ComboboxEmpty>
-          <ComboboxList>
-            {(item: ChartType) => (
-              <ComboboxItem key={item} value={item}>
-                {chartTypeLabels[item]}
-              </ComboboxItem>
-            )}
-          </ComboboxList>
-        </ComboboxContent>
-      </Combobox>
-    </div>
-    <RankHistoryChart data={data?.entries[0].snapshots ?? []} />
-  </div>
+  return <Tabs className="w-full max-w-3xl flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
+      <TabsList>
+        {chartTypes.map((type) => (
+          <TabsTrigger key={type} value={type}>
+            {chartTypeLabels[type]}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      {chartTypes.map((type) => (
+        <TabsContent key={type} value={type} className="w-full">
+          <RankHistoryChart data={data?.entries[0].snapshots ?? []} />
+        </TabsContent>
+      ))}
+    </Tabs>
 }

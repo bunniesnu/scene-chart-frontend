@@ -102,10 +102,10 @@ export function RankHistoryChart({ data }: Props) {
       <LineChart
         data={chartData}
         margin={{
-          top: 10,
+          top: 20,
           right: 20,
           bottom: 80,
-          left: 10,
+          left: 20,
         }}
       >
         <CartesianGrid
