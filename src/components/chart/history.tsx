@@ -137,10 +137,20 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
     },
     (_, index) => index * tickStep,
   );
+  const chartConfig = Object.fromEntries(
+    songIds.map((songId, index) => [
+      songId,
+      {
+        label: history.data?.entries.find((entry) => entry.song.song_id === songId)
+          ?.song.title ?? songId,
+        color: `hsl(${(index * 137.5) % 360}, 70%, 50%)`,
+      },
+    ]),
+  );
 
   return (
     <ChartContainer
-      config={{}}
+      config={chartConfig}
       className="h-100 w-full"
     >
       <LineChart
@@ -182,7 +192,11 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
           content={
             <ChartTooltipContent
               labelKey="timestamp"
-              formatter={formatTooltip}
+              labelFormatter={(_, payload) =>
+                payload?.[0]?.payload?.timestamp
+                  ? formatTick(payload[0].payload.timestamp)
+                  : ""
+              }
             />
           }
         />
