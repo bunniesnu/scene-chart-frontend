@@ -75,9 +75,9 @@ export function DatePickerWithRange(props: DatePickerWithRangeProps) {
         </PopoverContent>
       </Popover>
       <Button
-        variant={from && to && from < to ? "default" : "destructive"}
+        variant={from && to && from <= to ? "default" : "destructive"}
         onClick={() => {
-          if (from && to && from < to) {
+          if (from && to && from <= to) {
             props.onFromChange(from)
             props.onToChange(to)
           } else {
