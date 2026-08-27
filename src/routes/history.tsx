@@ -12,7 +12,7 @@ import { defaultChartType, defaultSelectedSongsForHistory } from '@/const';
 import { useState } from 'react';
 import { SongSelector } from '@/components/song/selector';
 import { $api } from '@/api';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DatePickerWithRange } from '@/components/dateRangePicker';
 
 export const Route = createFileRoute('/history')({
@@ -57,6 +57,13 @@ function RouteComponent() {
       {chartTypes.map((type) => (
         <TabsContent key={type} value={type} className="w-full">
           <Card size="sm" className="w-full">
+            <CardHeader>
+              <CardTitle>
+                <span className="text-lg font-semibold pl-1">
+                  Melon Rank History - {chartTypeLabels[type]}
+                </span>
+              </CardTitle>
+            </CardHeader>
             <CardContent>
               <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />
             </CardContent>
