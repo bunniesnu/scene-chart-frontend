@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { SongSelector } from '@/components/song/selector';
 import { $api } from '@/api';
 import { Card, CardContent } from '@/components/ui/card';
+import { DatePickerWithRange } from '@/components/dateRangePicker';
 
 export const Route = createFileRoute('/history')({
   component: RouteComponent,
@@ -31,17 +32,20 @@ function RouteComponent() {
           </TabsTrigger>
         ))}
       </TabsList>
-      <SongSelector
-        songs={songs.data ? songs.data?.songs : []}
-        value={selectedSongs}
-        onValueChange={(value) => {
-          if (selectedSongs.includes(value)) {
-            setSelectedSongs(selectedSongs.filter((songId) => songId !== value))
-          } else {
-            setSelectedSongs([...selectedSongs, value])
-          }
-        }}
-      />
+      <div className="mx-auto w-fit max-w-full flex flex-wrap items-center justify-center gap-4">
+        <SongSelector
+          songs={songs.data ? songs.data?.songs : []}
+          value={selectedSongs}
+          onValueChange={(value) => {
+            if (selectedSongs.includes(value)) {
+              setSelectedSongs(selectedSongs.filter((songId) => songId !== value))
+            } else {
+              setSelectedSongs([...selectedSongs, value])
+            }
+          }}
+        />
+        <DatePickerWithRange />
+      </div>
       {chartTypes.map((type) => (
         <TabsContent key={type} value={type} className="w-full">
           <Card size="sm" className="w-full">
