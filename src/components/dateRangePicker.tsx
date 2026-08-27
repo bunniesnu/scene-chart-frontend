@@ -12,6 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Field } from "@/components/ui/field"
+import { toast } from "@/components/ui/toast"
 
 type DatePickerWithRangeProps = {
   from: Date
@@ -79,6 +80,12 @@ export function DatePickerWithRange(props: DatePickerWithRangeProps) {
           if (from && to && from < to) {
             props.onFromChange(from)
             props.onToChange(to)
+          } else {
+            toast.add({
+              type: "error",
+              description: "Invalid date range. Please select a valid start and end date.",
+              priority: "high",
+            })
           }
         }}
       >
