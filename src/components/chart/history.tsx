@@ -65,8 +65,8 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props
             },
             query: {
               songId: songId,
-              from: dateFrom.toISOString().split('T')[0], 
-              to: dateTo.toISOString().split('T')[0],
+              from: `${dateFrom.getFullYear()}-${(dateFrom.getMonth() + 1).toString().padStart(2, "0")}-${dateFrom.getDate().toString().padStart(2, "0")}`,
+              to: `${dateTo.getFullYear()}-${(dateTo.getMonth() + 1).toString().padStart(2, "0")}-${dateTo.getDate().toString().padStart(2, "0")}`,
             }
           }
         }
