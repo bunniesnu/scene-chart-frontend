@@ -48,7 +48,7 @@ function formatTooltip(value: unknown) {
 }
 
 export function RankHistoryChart({ chartType }: Props) {
-  const { data, isLoading, error } = $api.useQuery(
+  const history = $api.useQuery(
     "get",
     "/charts/history/{chart_type}",
     {
@@ -62,7 +62,7 @@ export function RankHistoryChart({ chartType }: Props) {
       }
     }
   )
-  const chartData = (data && data.entries.length > 0) ? data.entries[0].snapshots
+  const chartData = (history.data && history.data.entries.length > 0) ? history.data.entries[0].snapshots
     .map((point) => ({
       ...point,
       timestamp: new Date(
