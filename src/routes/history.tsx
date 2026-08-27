@@ -11,6 +11,7 @@ import { defaultChartType } from '@/const';
 import { useState } from 'react';
 import { SongSelector } from '@/components/song/selector';
 import { $api } from '@/api';
+import { Card, CardContent } from '@/components/ui/card';
 
 export const Route = createFileRoute('/history')({
   component: RouteComponent,
@@ -48,7 +49,11 @@ function RouteComponent() {
       />
       {chartTypes.map((type) => (
         <TabsContent key={type} value={type} className="w-full">
-          <RankHistoryChart songIds={selectedSongs} chartType={type} />
+          <Card size="sm" className="w-full">
+            <CardContent>
+              <RankHistoryChart songIds={selectedSongs} chartType={type} />
+            </CardContent>
+          </Card>
         </TabsContent>
       ))}
     </Tabs>

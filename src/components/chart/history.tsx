@@ -45,15 +45,8 @@ function formatTick(value: number) {
   const hour = get("hour");
   const minute = get("minute");
 
-  return `${year}-${month}-${day} ${hour}:${minute}`;
-}
-
-function formatTooltip(value: unknown) {
-  if (typeof value !== "number") {
-    return [String(value), "Rank"];
-  }
-
-  return [`${value}`, "Rank"];
+  // return `${year}-${month}-${day} ${hour}:${minute}`;
+  return `${month}-${day} ${hour}:${minute}`;
 }
 
 export function RankHistoryChart({ songIds, chartType }: Props) {
@@ -158,8 +151,8 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
         margin={{
           top: 20,
           right: 20,
-          bottom: 80,
-          left: 20,
+          bottom: 20,
+          left: 0,
         }}
       >
         <CartesianGrid
@@ -174,7 +167,7 @@ export function RankHistoryChart({ songIds, chartType }: Props) {
           domain={["dataMin", "dataMax"]}
           minTickGap={50}
           tickFormatter={formatTick}
-          angle={-45}
+          angle={-30}
           textAnchor="end"
           height={65}
           tickMargin={8}
