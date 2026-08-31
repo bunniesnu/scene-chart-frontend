@@ -49,7 +49,7 @@ function formatTick(value: number, includeTime: boolean = true) {
   const minute = get("minute");
 
   // return `${year}-${month}-${day} ${hour}:${minute}`;
-  return includeTime ? `${month}-${day} ${hour}:${minute}` : `${year}-${month}-${day}`;
+  return includeTime ? `${year}-${month}-${day} ${hour}:${minute}` : `${year}-${month}-${day}`;
 }
 
 export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props) {
