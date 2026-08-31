@@ -65,8 +65,6 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props
             },
             query: {
               songId: songId,
-              from: `${dateFrom.getFullYear()}-${(dateFrom.getMonth() + 1).toString().padStart(2, "0")}-${dateFrom.getDate().toString().padStart(2, "0")}`,
-              to: `${dateTo.getFullYear()}-${(dateTo.getMonth() + 1).toString().padStart(2, "0")}-${dateTo.getDate().toString().padStart(2, "0")}`,
             }
           }
         }
@@ -84,6 +82,12 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props
       const songId = entry.data.entry.song.song_id;
 
       for (const point of entry.data.entry.snapshots) {
+        if (
+          (new Date(point.rank_day)).getTime() < (new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0)).getTime()
+          || (new Date(point.rank_day)).getTime() > (new Date(dateTo.getFullYear(), dateTo.getMonth(), dateTo.getDate(), 23, 59, 59)).getTime()
+        ) {
+          continue;
+        }
         const timestamp = new Date(
           point.rank_hour !== null ? `${point.rank_day} ${point.rank_hour}` : point.rank_day,
         ).getTime();
