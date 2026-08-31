@@ -53,6 +53,7 @@ export function DatePickerWithRange(props: DatePickerWithRangeProps) {
                 selected={from}
                 onSelect={setFrom}
                 captionLayout="dropdown"
+                defaultMonth={from}
                 required
               />
             </div>
@@ -69,6 +70,7 @@ export function DatePickerWithRange(props: DatePickerWithRangeProps) {
                 onSelect={setTo}
                 captionLayout="dropdown"
                 required
+                defaultMonth={to}
               />
             </div>
           </div>
