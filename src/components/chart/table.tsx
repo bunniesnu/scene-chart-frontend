@@ -50,7 +50,7 @@ function ChartTable(chartTableProps: ChartTableProps) {
               <TableCell colSpan={3} className="text-center text-gray-400 h-20">Loading...</TableCell>
             </TableRow> : (error ? <TableRow>
                 <TableCell colSpan={3} className="text-center text-gray-400 h-20">Error</TableCell>
-              </TableRow> : (data ? data.entries.map((item, index) => {
+              </TableRow> : (data ? data.entries.map((item, _) => {
                 let rankChangeBadge = <Badge className="bg-gray-200 text-gray-400 text-sm text-center min-w-11">
                   -
                 </Badge>
