@@ -114,11 +114,6 @@ export interface components {
         /** ChartResponse */
         ChartResponse: {
             chart_type: components["schemas"]["ChartType"];
-            /**
-             * Fetched At
-             * Format: date-time
-             */
-            fetched_at: string;
             /** Entries */
             entries: components["schemas"]["ChartEntryResponse"][];
         };
@@ -258,6 +253,8 @@ export interface operations {
         parameters: {
             query: {
                 songId: string;
+                from?: string | null;
+                to?: string | null;
             };
             header?: never;
             path: {
