@@ -1,4 +1,4 @@
-import type { ChartType } from "@/types/chart";
+import type { ChartType, ChartTypeWithRankHour } from "@/types/chart";
 import {
   ChartContainer,
   ChartTooltip,
@@ -245,7 +245,22 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Chart
   );
 }
 
+interface TableWithRankHourProps extends TableProps {
+  chartType: ChartTypeWithRankHour;
+}
+
 export function RankHistoryTable({ songId, chartType, dateFrom, dateTo }: TableProps) {
+  if (chartType === "top100" || chartType === "realtime" || chartType === "hot100") {
+    return <RankHistoryTableWithRankHour
+      songId={songId}
+      chartType={chartType}
+      dateFrom={dateFrom}
+      dateTo={dateTo}
+    />
+  }
+}
+
+function RankHistoryTableWithRankHour({ songId, chartType, dateFrom, dateTo }: TableWithRankHourProps) {
   const history = useQuery(
     $api.queryOptions(
       "get",
