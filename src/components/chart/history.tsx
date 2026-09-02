@@ -380,7 +380,6 @@ function RankHistoryTableDaily({ songId, dateFrom, dateTo }: TableDailyProps) {
         <TableHead className="text-center">Date</TableHead>
         <TableHead className="text-center">Rank</TableHead>
         <TableHead className="text-center">Users</TableHead>
-        <TableHead className="text-center">Change</TableHead>
         <TableHead className="text-center">Male</TableHead>
         <TableHead className="text-center">Female</TableHead>
         <TableHead className="text-center">10</TableHead>
@@ -404,7 +403,6 @@ function RankHistoryTableDaily({ songId, dateFrom, dateTo }: TableDailyProps) {
             <TableCell className="text-center">{formatDate(addDays(new Date(row.report_date), -1), "yyyy-MM-dd")}</TableCell>
             <TableCell className="text-center">{row.yesterday_rank ? row.yesterday_rank : "-"}</TableCell>
             <TableCell className="text-center">{row.daily_listener_count ? row.daily_listener_count : "-"}</TableCell>
-            <TableCell className="text-center">{"-"}</TableCell>
             <TableCell className="text-center">{row.male_percent ? `${row.male_percent}%` : "-"}</TableCell>
             <TableCell className="text-center">{row.female_percent ? `${row.female_percent}%` : "-"}</TableCell>
             {row.age_percent ? row.age_percent.map((value, index) => (
