@@ -1,3 +1,4 @@
+import { addDays } from "date-fns"
 import {
   Card,
   CardContent,
@@ -34,7 +35,11 @@ function ChartTable(chartTableProps: ChartTableProps) {
     }
   )
   return <>
-    <div className="mx-auto w-min whitespace-nowrap text-gray-500 font-semibold">{(data && data.entries.length > 0) ? getChartRankAt(data.entries[0].snapshot.rank_day, data.entries[0].snapshot.rank_hour) : "----.--.-- --:-- KST"}</div>
+    <div className="mx-auto w-min whitespace-nowrap text-gray-500 font-semibold">{(data && data.entries.length > 0) ? getChartRankAt((
+      (chartTableProps.chartType === "daily")
+      ? addDays(new Date(data.entries[0].snapshot.rank_day), -1).toDateString()
+      : data.entries[0].snapshot.rank_day
+    ), data.entries[0].snapshot.rank_hour) : "----.--.-- --:-- KST"}</div>
     <Card className="w-full [--card-spacing:--spacing(2)] py-0 mt-4">
       <CardContent>
         <Table>

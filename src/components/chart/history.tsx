@@ -1,3 +1,4 @@
+import { addDays, formatDate } from "date-fns"
 import type { ChartType, ChartTypeWithRankHour } from "@/types/chart";
 import {
   ChartContainer,
@@ -400,7 +401,7 @@ function RankHistoryTableDaily({ songId, dateFrom, dateTo }: TableDailyProps) {
       ).map((row) => {
         return (
           <TableRow key={row.report_date}>
-            <TableCell className="text-center">{row.report_date}</TableCell>
+            <TableCell className="text-center">{formatDate(addDays(new Date(row.report_date), -1), "yyyy-MM-dd")}</TableCell>
             <TableCell className="text-center">{row.yesterday_rank ? row.yesterday_rank : "-"}</TableCell>
             <TableCell className="text-center">{row.daily_listener_count ? row.daily_listener_count : "-"}</TableCell>
             <TableCell className="text-center">{"-"}</TableCell>

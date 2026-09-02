@@ -7,7 +7,7 @@ export const formatDateTime = (date: Date, includeTime: boolean) => {
 
 export const getChartRankAt = (rank_day: string, rank_hour: string | null) => {
   if (rank_hour === null) {
-    const date = new Date(rank_day.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3"))
+    const date = new Date(rank_day)
     return formatDateTime(date, false)
   }
   const date = new Date(rank_day + " " + (rank_hour ?? "00:00"))
