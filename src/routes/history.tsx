@@ -49,7 +49,7 @@ function RouteComponent() {
         ))}
       </TabsList>
       <div className="mx-auto w-fit max-w-full flex flex-wrap items-center justify-center gap-4">
-        <ToggleGroup variant="outline" defaultValue={[HistoryShowStyles[0]]} onValueChange={(value) => setHistoryShowStyle(value[0] as HistoryShowStyleType)}>
+        <ToggleGroup variant="outline" defaultValue={[historyShowStyle]} onValueChange={(value) => setHistoryShowStyle(value[0] as HistoryShowStyleType)}>
           {HistoryShowStyles.map((style) => (
             <ToggleGroupItem key={style} value={style} aria-label={`Toggle ${style}`}>
               {HistoryShowStyleLabels[style]}
