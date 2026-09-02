@@ -7,13 +7,24 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import { RankHistoryChart } from '@/components/chart/history';
-import { defaultChartType, defaultSelectedSongsForHistory } from '@/const';
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/ui/toggle-group"
+import { RankHistoryChart, RankHistoryTable } from '@/components/chart/history';
+import { defaultChartType, defaultSelectedSongForHistoryTable, defaultSelectedSongsForHistory } from '@/const';
 import { useState } from 'react';
-import { SongSelector } from '@/components/song/selector';
+import { SongSelectorMultiple, SongSelectorSingle } from '@/components/song/selector';
 import { $api } from '@/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DatePickerWithRange } from '@/components/dateRangePicker';
+
+type HistoryShowStyleType = "chart" | "table"
+const HistoryShowStyles: HistoryShowStyleType[] = ["chart", "table"]
+const HistoryShowStyleLabels: Record<HistoryShowStyleType, string> = {
+  chart: "Chart",
+  table: "Table",
+}
 
 export const Route = createFileRoute('/history')({
   component: RouteComponent,
@@ -27,6 +38,8 @@ function RouteComponent() {
   const [dateFrom, setDateFrom] = useState<Date>(addWeeks(new Date(), -1))
   const [dateTo, setDateTo] = useState<Date>(new Date())
   const [selectedSongs, setSelectedSongs] = useState<string[]>(defaultSelectedSongsForHistory)
+  const [historyShowStyle, setHistoryShowStyle] = useState<HistoryShowStyleType>("chart")
+  const [selectedTableSong, setSelectedTableSong] = useState<string>(defaultSelectedSongForHistoryTable)
   return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
       <TabsList>
         {chartTypes.map((type) => (
@@ -36,17 +49,33 @@ function RouteComponent() {
         ))}
       </TabsList>
       <div className="mx-auto w-fit max-w-full flex flex-wrap items-center justify-center gap-4">
-        <SongSelector
-          songs={songs.data ? songs.data?.songs : []}
-          value={selectedSongs}
-          onValueChange={(value) => {
-            if (selectedSongs.includes(value)) {
-              setSelectedSongs(selectedSongs.filter((songId) => songId !== value))
-            } else {
-              setSelectedSongs([...selectedSongs, value])
-            }
-          }}
-        />
+        <ToggleGroup variant="outline" defaultValue={[historyShowStyle]} onValueChange={(value) => setHistoryShowStyle(value[0] as HistoryShowStyleType)}>
+          {HistoryShowStyles.map((style) => (
+            <ToggleGroupItem key={style} value={style} aria-label={`Toggle ${style}`}>
+              {HistoryShowStyleLabels[style]}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+        {{
+          chart: <SongSelectorMultiple
+            songs={songs.data ? songs.data?.songs : []}
+            value={selectedSongs}
+            onValueChange={(value) => {
+              if (selectedSongs.includes(value)) {
+                setSelectedSongs(selectedSongs.filter((songId) => songId !== value))
+              } else {
+                setSelectedSongs([...selectedSongs, value])
+              }
+            }}
+          />,
+          table: <SongSelectorSingle
+            songs={songs.data ? songs.data?.songs : []}
+            value={selectedTableSong}
+            onValueChange={(value) => {
+              setSelectedTableSong(value)
+            }}
+          />,
+        }[historyShowStyle]}
         <DatePickerWithRange
           from={dateFrom}
           to={dateTo}
@@ -65,7 +94,10 @@ function RouteComponent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />
+              {{
+                chart: <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />,
+                table: <RankHistoryTable songId={selectedTableSong} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />
+              }[historyShowStyle]}
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,4 +1,5 @@
-import type { ChartType } from "@/types/chart";
+import { addDays, formatDate } from "date-fns"
+import type { ChartType, ChartTypeWithRankHour } from "@/types/chart";
 import {
   ChartContainer,
   ChartTooltip,
@@ -12,10 +13,25 @@ import {
   YAxis,
 } from "recharts";
 import { $api } from "@/api"
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
-type Props = {
+type ChartProps = {
   songIds: string[];
+  chartType: ChartType;
+  dateFrom: Date;
+  dateTo: Date;
+};
+
+type TableProps = {
+  songId: string;
   chartType: ChartType;
   dateFrom: Date;
   dateTo: Date;
@@ -52,7 +68,7 @@ function formatTick(value: number, includeTime: boolean = true) {
   return includeTime ? `${year}-${month}-${day} ${hour}:${minute}` : `${year}-${month}-${day}`;
 }
 
-export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props) {
+export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: ChartProps) {
   const history = useQueries({
     queries: songIds.map((songId) =>
       $api.queryOptions(
@@ -67,7 +83,7 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props
               songId: songId,
             }
           }
-        }
+        },
       )
     ),
   });
@@ -228,4 +244,177 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props
       </LineChart>
     </ChartContainer>
   );
+}
+
+interface TableWithRankHourProps extends TableProps {
+  chartType: ChartTypeWithRankHour;
+}
+interface TableDailyProps extends TableProps {
+  chartType: Extract<ChartType, "daily">;
+}
+
+export function RankHistoryTable({ songId, chartType, dateFrom, dateTo }: TableProps) {
+  if (chartType === "top100" || chartType === "realtime" || chartType === "hot100") {
+    return <RankHistoryTableWithRankHour
+      songId={songId}
+      chartType={chartType}
+      dateFrom={dateFrom}
+      dateTo={dateTo}
+    />
+  }
+  if (chartType === "daily") {
+    return <RankHistoryTableDaily
+      songId={songId}
+      chartType={chartType}
+      dateFrom={dateFrom}
+      dateTo={dateTo}
+    />
+  }
+}
+
+function RankHistoryTableWithRankHour({ songId, chartType, dateFrom, dateTo }: TableWithRankHourProps) {
+  const history = useQuery(
+    $api.queryOptions(
+      "get",
+      "/charts/history/{chart_type}",
+      {
+        params: {
+          path: {
+            chart_type: chartType,
+          },
+          query: {
+            songId: songId,
+          }
+        }
+      },
+    )
+  );
+  const tableRows = history.data ? Object.values(
+    history.data.entry.snapshots
+    .filter((snapshot) => {
+      const snapshotDate = new Date(snapshot.rank_day);
+      return snapshotDate >= new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0)
+        && snapshotDate <= new Date(dateTo.getFullYear(), dateTo.getMonth(), dateTo.getDate(), 23, 59, 59);
+    })
+    .reduce<
+      Record<
+        string,
+        {
+          rank_day: string;
+          ranks: {
+            rank: number;
+            rank_hour: number;
+          }[];
+        }
+      >
+    >((acc, snapshot) => {
+      const { rank_day, current_rank, rank_hour } = snapshot;
+
+      if (!acc[rank_day]) {
+        acc[rank_day] = {
+          rank_day,
+          ranks: [],
+        };
+      }
+
+      if (rank_hour === null) {
+        throw new Error(`Missing rank_hour for ${rank_day}`);
+      }
+
+      acc[rank_day].ranks.push({
+        rank: current_rank,
+        rank_hour: Number(rank_hour.split(":")[0]),
+      });
+
+      return acc;
+    }, {})
+  ) : null;
+  return <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead className="text-center">Date</TableHead>
+        {Array.from(Array(24).keys()).map((value, index) => (
+          <TableHead key={index} className="w-12 text-center">{value}</TableHead>
+        ))}
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {tableRows ? tableRows.map((row) => {
+        const ranksByHour = Object.fromEntries(
+          row.ranks.map((rank) => [rank.rank_hour, rank.rank]),
+        );
+        return (
+          <TableRow key={row.rank_day}>
+            <TableCell className="text-center">{row.rank_day}</TableCell>
+            {Array.from(Array(24).keys()).map((hour) => (
+              <TableCell key={hour} className="text-center">
+                {ranksByHour[hour] ?? "-"}
+              </TableCell>
+            ))}
+          </TableRow>
+        );
+      }) : <TableRow>
+        <TableCell colSpan={25} className="text-center text-gray-400 h-20">No data</TableCell>
+      </TableRow>}
+    </TableBody>
+  </Table>
+}
+
+function RankHistoryTableDaily({ songId, dateFrom, dateTo }: TableDailyProps) {
+  const streamReports = useQuery(
+    $api.queryOptions(
+      "get",
+      "/reports/history",
+      {
+        params: {
+          query: {
+            songId: songId,
+          }
+        }
+      },
+    )
+  );
+  return <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead className="text-center">Date</TableHead>
+        <TableHead className="text-center">Rank</TableHead>
+        <TableHead className="text-center">Users</TableHead>
+        <TableHead className="text-center">Male</TableHead>
+        <TableHead className="text-center">Female</TableHead>
+        <TableHead className="text-center">10</TableHead>
+        <TableHead className="text-center">20</TableHead>
+        <TableHead className="text-center">30</TableHead>
+        <TableHead className="text-center">40</TableHead>
+        <TableHead className="text-center">50</TableHead>
+        <TableHead className="text-center">60</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {streamReports.data ? streamReports.data.snapshots.filter(
+        (snapshot) => {
+          const snapshotDate = new Date(snapshot.report_date);
+          return snapshotDate >= new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0)
+            && snapshotDate <= new Date(dateTo.getFullYear(), dateTo.getMonth(), dateTo.getDate(), 23, 59, 59);
+        }
+      ).map((row) => {
+        return (
+          <TableRow key={row.report_date}>
+            <TableCell className="text-center">{formatDate(addDays(new Date(row.report_date), -1), "yyyy-MM-dd")}</TableCell>
+            <TableCell className="text-center">{row.yesterday_rank ? row.yesterday_rank : "-"}</TableCell>
+            <TableCell className="text-center">{row.daily_listener_count ? row.daily_listener_count : "-"}</TableCell>
+            <TableCell className="text-center">{row.male_percent ? `${row.male_percent}%` : "-"}</TableCell>
+            <TableCell className="text-center">{row.female_percent ? `${row.female_percent}%` : "-"}</TableCell>
+            {row.age_percent ? row.age_percent.map((value, index) => (
+              <TableCell key={index} className="text-center">{value !== 0 ? `${value}%` : "-"}</TableCell>
+            )) : Array.from(Array(6).keys()).map((i) => (
+              <TableCell key={i} className="text-center">{"-"}</TableCell>
+            ))}
+          </TableRow>
+        );
+      }) : <TableRow>
+        <TableCell colSpan={25} className="text-center text-gray-400 h-20">No data</TableCell>
+      </TableRow>}
+    </TableBody>
+  </Table>
 }

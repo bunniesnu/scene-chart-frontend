@@ -6,6 +6,8 @@ export type Song = paths["/artist/songs"]["get"]["responses"]["200"]["content"][
 
 export const chartTypes: ChartType[] = ["top100", "realtime", "hot100", "daily", "weekly"]
 
+export type ChartTypeWithRankHour = Extract<ChartType, "top100" | "realtime" | "hot100">;
+
 export const chartTypeLabels: Record<ChartType, string> = {
   top100: "Top100",
   realtime: "Realtime",

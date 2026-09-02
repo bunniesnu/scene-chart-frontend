@@ -6,7 +6,8 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { Toaster } from "@/components/ui/toast"
 
 import { routeTree } from '@/routeTree.gen'
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider } from "@/components/theme-provider";
+import { defaultStaleTime } from "@/const";
 
 const router = createRouter({ routeTree })
 
@@ -16,7 +17,13 @@ declare module '@tanstack/react-router' {
   }
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: defaultStaleTime,
+    },
+  },
+})
 
 function App() {
   return (

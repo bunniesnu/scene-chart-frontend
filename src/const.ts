@@ -8,3 +8,7 @@ export const defaultSelectedSongsForHistory: string[] = [
   "39231685",
   "601719493"
 ]
+
+export const defaultSelectedSongForHistoryTable: string = "37928381"
+
+export const defaultStaleTime: number = 5 * 60 * 1000 // 5 minutes

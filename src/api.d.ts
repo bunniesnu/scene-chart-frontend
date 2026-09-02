@@ -55,15 +55,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/debug/melon-db": {
+    "/reports/history": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Dump Melon Database */
-        get: operations["dump_melon_database_debug_melon_db_get"];
+        /** Get Song Stream Report History */
+        get: operations["get_song_stream_report_history_reports_history_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -176,6 +176,45 @@ export interface components {
             /** Is Title Song */
             is_title_song: boolean | null;
         };
+        /** SongStreamReportHistoryResponse */
+        SongStreamReportHistoryResponse: {
+            /** Song Id */
+            song_id: string;
+            /** Snapshots */
+            snapshots: components["schemas"]["SongStreamReportSnapshotResponse"][];
+        };
+        /** SongStreamReportSnapshotResponse */
+        SongStreamReportSnapshotResponse: {
+            /**
+             * Fetched At
+             * Format: date-time
+             */
+            fetched_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Report Date
+             * Format: date
+             */
+            report_date: string;
+            /** Daily Listener Count */
+            daily_listener_count: number | null;
+            /** Total Listen Count */
+            total_listen_count: number | null;
+            /** Total Listener Count */
+            total_listener_count: number | null;
+            /** Male Percent */
+            male_percent: string | null;
+            /** Female Percent */
+            female_percent: string | null;
+            /** Yesterday Rank */
+            yesterday_rank: number | null;
+            /** Age Percent */
+            age_percent: number[] | null;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -253,8 +292,6 @@ export interface operations {
         parameters: {
             query: {
                 songId: string;
-                from?: string | null;
-                to?: string | null;
             };
             header?: never;
             path: {
@@ -284,9 +321,11 @@ export interface operations {
             };
         };
     };
-    dump_melon_database_debug_melon_db_get: {
+    get_song_stream_report_history_reports_history_get: {
         parameters: {
-            query?: never;
+            query: {
+                songId: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -299,7 +338,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["SongStreamReportHistoryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
