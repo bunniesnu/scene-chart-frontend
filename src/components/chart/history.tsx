@@ -248,10 +248,21 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Chart
 interface TableWithRankHourProps extends TableProps {
   chartType: ChartTypeWithRankHour;
 }
+interface TableDailyProps extends TableProps {
+  chartType: Extract<ChartType, "daily">;
+}
 
 export function RankHistoryTable({ songId, chartType, dateFrom, dateTo }: TableProps) {
   if (chartType === "top100" || chartType === "realtime" || chartType === "hot100") {
     return <RankHistoryTableWithRankHour
+      songId={songId}
+      chartType={chartType}
+      dateFrom={dateFrom}
+      dateTo={dateTo}
+    />
+  }
+  if (chartType === "daily") {
+    return <RankHistoryTableDaily
       songId={songId}
       chartType={chartType}
       dateFrom={dateFrom}
@@ -338,6 +349,67 @@ function RankHistoryTableWithRankHour({ songId, chartType, dateFrom, dateTo }: T
               <TableCell key={hour} className="text-center">
                 {ranksByHour[hour] ?? "-"}
               </TableCell>
+            ))}
+          </TableRow>
+        );
+      }) : <TableRow>
+        <TableCell colSpan={25} className="text-center text-gray-400 h-20">No data</TableCell>
+      </TableRow>}
+    </TableBody>
+  </Table>
+}
+
+function RankHistoryTableDaily({ songId, dateFrom, dateTo }: TableDailyProps) {
+  const streamReports = useQuery(
+    $api.queryOptions(
+      "get",
+      "/reports/history",
+      {
+        params: {
+          query: {
+            songId: songId,
+          }
+        }
+      },
+    )
+  );
+  return <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead className="text-center">Date</TableHead>
+        <TableHead className="text-center">Rank</TableHead>
+        <TableHead className="text-center">Users</TableHead>
+        <TableHead className="text-center">Change</TableHead>
+        <TableHead className="text-center">Male</TableHead>
+        <TableHead className="text-center">Female</TableHead>
+        <TableHead className="text-center">10</TableHead>
+        <TableHead className="text-center">20</TableHead>
+        <TableHead className="text-center">30</TableHead>
+        <TableHead className="text-center">40</TableHead>
+        <TableHead className="text-center">50</TableHead>
+        <TableHead className="text-center">60</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {streamReports.data ? streamReports.data.snapshots.filter(
+        (snapshot) => {
+          const snapshotDate = new Date(snapshot.report_date);
+          return snapshotDate >= new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0)
+            && snapshotDate <= new Date(dateTo.getFullYear(), dateTo.getMonth(), dateTo.getDate(), 23, 59, 59);
+        }
+      ).map((row) => {
+        return (
+          <TableRow key={row.report_date}>
+            <TableCell className="text-center">{row.report_date}</TableCell>
+            <TableCell className="text-center">{row.yesterday_rank ? row.yesterday_rank : "-"}</TableCell>
+            <TableCell className="text-center">{row.daily_listener_count ? row.daily_listener_count : "-"}</TableCell>
+            <TableCell className="text-center">{"-"}</TableCell>
+            <TableCell className="text-center">{row.male_percent ? `${row.male_percent}%` : "-"}</TableCell>
+            <TableCell className="text-center">{row.female_percent ? `${row.female_percent}%` : "-"}</TableCell>
+            {row.age_percent ? row.age_percent.map((value, index) => (
+              <TableCell key={index} className="text-center">{value !== 0 ? `${value}%` : "-"}</TableCell>
+            )) : Array.from(Array(6).keys()).map((i) => (
+              <TableCell key={i} className="text-center">{"-"}</TableCell>
             ))}
           </TableRow>
         );
