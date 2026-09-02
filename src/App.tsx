@@ -6,8 +6,8 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { Toaster } from "@/components/ui/toast"
 
 import { routeTree } from '@/routeTree.gen'
-import { ThemeProvider } from "./components/theme-provider";
-import { defaultStaleTime } from "./const";
+import { ThemeProvider } from "@/components/theme-provider";
+import { defaultStaleTime } from "@/const";
 
 const router = createRouter({ routeTree })
 
