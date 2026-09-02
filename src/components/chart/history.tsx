@@ -321,8 +321,8 @@ function RankHistoryTableWithRankHour({ songId, chartType, dateFrom, dateTo }: T
     <TableHeader>
       <TableRow>
         <TableHead className="text-center">Date</TableHead>
-        {Array.from(Array(24).keys()).map((index, val) => (
-          <TableHead key={index} className="w-12 text-center">{val}</TableHead>
+        {Array.from(Array(24).keys()).map((value, index) => (
+          <TableHead key={index} className="w-12 text-center">{value}</TableHead>
         ))}
       </TableRow>
     </TableHeader>
