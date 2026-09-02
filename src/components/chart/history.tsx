@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { $api } from "@/api"
 import { useQueries } from "@tanstack/react-query";
+import { defaultStaleTime } from "@/const";
 
 type Props = {
   songIds: string[];
@@ -67,7 +68,10 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props
               songId: songId,
             }
           }
-        }
+        },
+        {
+          staleTime: defaultStaleTime,
+        },
       )
     ),
   });
