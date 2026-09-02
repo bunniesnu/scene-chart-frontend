@@ -27,7 +27,7 @@ function RouteComponent() {
   const [dateFrom, setDateFrom] = useState<Date>(addWeeks(new Date(), -1))
   const [dateTo, setDateTo] = useState<Date>(new Date())
   const [selectedSongs, setSelectedSongs] = useState<string[]>(defaultSelectedSongsForHistory)
-  return <Tabs className="w-full max-w-3xl flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
+  return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
       <TabsList>
         {chartTypes.map((type) => (
           <TabsTrigger key={type} value={type}>

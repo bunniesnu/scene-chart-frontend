@@ -9,7 +9,7 @@ export const Route = createFileRoute('/')({
 })
 
 function Index() {
-return <Tabs className="w-full max-w-xl flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
+return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
     <TabsList>
       {chartTypes.map((type) => (
         <TabsTrigger key={type} value={type}>
