@@ -55,6 +55,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/reports/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Song Stream Report History */
+        get: operations["get_song_stream_report_history_reports_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -159,6 +176,45 @@ export interface components {
             /** Is Title Song */
             is_title_song: boolean | null;
         };
+        /** SongStreamReportHistoryResponse */
+        SongStreamReportHistoryResponse: {
+            /** Song Id */
+            song_id: string;
+            /** Snapshots */
+            snapshots: components["schemas"]["SongStreamReportSnapshotResponse"][];
+        };
+        /** SongStreamReportSnapshotResponse */
+        SongStreamReportSnapshotResponse: {
+            /**
+             * Fetched At
+             * Format: date-time
+             */
+            fetched_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Report Date
+             * Format: date
+             */
+            report_date: string;
+            /** Daily Listener Count */
+            daily_listener_count: number | null;
+            /** Total Listen Count */
+            total_listen_count: number | null;
+            /** Total Listener Count */
+            total_listener_count: number | null;
+            /** Male Percent */
+            male_percent: string | null;
+            /** Female Percent */
+            female_percent: string | null;
+            /** Yesterday Rank */
+            yesterday_rank: number | null;
+            /** Age Percent */
+            age_percent: number[] | null;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -252,6 +308,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChartHistoryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_song_stream_report_history_reports_history_get: {
+        parameters: {
+            query: {
+                songId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongStreamReportHistoryResponse"];
                 };
             };
             /** @description Validation Error */
