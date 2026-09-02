@@ -12,10 +12,25 @@ import {
   YAxis,
 } from "recharts";
 import { $api } from "@/api"
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
-type Props = {
+type ChartProps = {
   songIds: string[];
+  chartType: ChartType;
+  dateFrom: Date;
+  dateTo: Date;
+};
+
+type TableProps = {
+  songId: string;
   chartType: ChartType;
   dateFrom: Date;
   dateTo: Date;
@@ -52,7 +67,7 @@ function formatTick(value: number, includeTime: boolean = true) {
   return includeTime ? `${year}-${month}-${day} ${hour}:${minute}` : `${year}-${month}-${day}`;
 }
 
-export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props) {
+export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: ChartProps) {
   const history = useQueries({
     queries: songIds.map((songId) =>
       $api.queryOptions(
@@ -228,4 +243,86 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Props
       </LineChart>
     </ChartContainer>
   );
+}
+
+export function RankHistoryTable({ songId, chartType, dateFrom, dateTo }: TableProps) {
+  const history = useQuery(
+    $api.queryOptions(
+      "get",
+      "/charts/history/{chart_type}",
+      {
+        params: {
+          path: {
+            chart_type: chartType,
+          },
+          query: {
+            songId: songId,
+          }
+        }
+      },
+    )
+  );
+  const tableRows = history.data ? Object.values(
+    history.data.entry.snapshots.reduce<
+      Record<
+        string,
+        {
+          rank_day: string;
+          ranks: {
+            rank: number;
+            rank_hour: number;
+          }[];
+        }
+      >
+    >((acc, snapshot) => {
+      const { rank_day, current_rank, rank_hour } = snapshot;
+
+      if (!acc[rank_day]) {
+        acc[rank_day] = {
+          rank_day,
+          ranks: [],
+        };
+      }
+
+      if (rank_hour === null) {
+        throw new Error(`Missing rank_hour for ${rank_day}`);
+      }
+
+      acc[rank_day].ranks.push({
+        rank: current_rank,
+        rank_hour: Number(rank_hour.split(":")[0]),
+      });
+
+      return acc;
+    }, {})
+  ) : null;
+  return <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead className="text-center">Date</TableHead>
+        {Array.from(Array(24).keys()).map((index, val) => (
+          <TableHead key={index} className="w-12 text-center">{val}</TableHead>
+        ))}
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {tableRows ? tableRows.map((row) => {
+        const ranksByHour = Object.fromEntries(
+          row.ranks.map((rank) => [rank.rank_hour, rank.rank]),
+        );
+        return (
+          <TableRow key={row.rank_day}>
+            <TableCell className="text-center">{row.rank_day}</TableCell>
+            {Array.from(Array(24).keys()).map((hour) => (
+              <TableCell key={hour} className="text-center">
+                {ranksByHour[hour] ?? "-"}
+              </TableCell>
+            ))}
+          </TableRow>
+        );
+      }) : <TableRow>
+        <TableCell colSpan={25} className="text-center text-gray-400 h-20">No data</TableCell>
+      </TableRow>}
+    </TableBody>
+  </Table>
 }

@@ -11,7 +11,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
-import { RankHistoryChart } from '@/components/chart/history';
+import { RankHistoryChart, RankHistoryTable } from '@/components/chart/history';
 import { defaultChartType, defaultSelectedSongForHistoryTable, defaultSelectedSongsForHistory } from '@/const';
 import { useState } from 'react';
 import { SongSelectorMultiple, SongSelectorSingle } from '@/components/song/selector';
@@ -96,7 +96,7 @@ function RouteComponent() {
             <CardContent>
               {{
                 chart: <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />,
-                table: <div>Table view is not implemented yet.</div>
+                table: <RankHistoryTable songId={selectedTableSong} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />
               }[historyShowStyle]}
             </CardContent>
           </Card>
