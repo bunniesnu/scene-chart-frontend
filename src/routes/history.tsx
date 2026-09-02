@@ -12,9 +12,9 @@ import {
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
 import { RankHistoryChart } from '@/components/chart/history';
-import { defaultChartType, defaultSelectedSongsForHistory } from '@/const';
+import { defaultChartType, defaultSelectedSongForHistoryTable, defaultSelectedSongsForHistory } from '@/const';
 import { useState } from 'react';
-import { SongSelector } from '@/components/song/selector';
+import { SongSelectorMultiple, SongSelectorSingle } from '@/components/song/selector';
 import { $api } from '@/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DatePickerWithRange } from '@/components/dateRangePicker';
@@ -39,6 +39,7 @@ function RouteComponent() {
   const [dateTo, setDateTo] = useState<Date>(new Date())
   const [selectedSongs, setSelectedSongs] = useState<string[]>(defaultSelectedSongsForHistory)
   const [historyShowStyle, setHistoryShowStyle] = useState<HistoryShowStyleType>("chart")
+  const [selectedTableSong, setSelectedTableSong] = useState<string>(defaultSelectedSongForHistoryTable)
   return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
       <TabsList>
         {chartTypes.map((type) => (
@@ -55,17 +56,26 @@ function RouteComponent() {
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
-        <SongSelector
-          songs={songs.data ? songs.data?.songs : []}
-          value={selectedSongs}
-          onValueChange={(value) => {
-            if (selectedSongs.includes(value)) {
-              setSelectedSongs(selectedSongs.filter((songId) => songId !== value))
-            } else {
-              setSelectedSongs([...selectedSongs, value])
-            }
-          }}
-        />
+        {{
+          chart: <SongSelectorMultiple
+            songs={songs.data ? songs.data?.songs : []}
+            value={selectedSongs}
+            onValueChange={(value) => {
+              if (selectedSongs.includes(value)) {
+                setSelectedSongs(selectedSongs.filter((songId) => songId !== value))
+              } else {
+                setSelectedSongs([...selectedSongs, value])
+              }
+            }}
+          />,
+          table: <SongSelectorSingle
+            songs={songs.data ? songs.data?.songs : []}
+            value={selectedTableSong}
+            onValueChange={(value) => {
+              setSelectedTableSong(value)
+            }}
+          />,
+        }[historyShowStyle]}
         <DatePickerWithRange
           from={dateFrom}
           to={dateTo}
@@ -85,8 +95,8 @@ function RouteComponent() {
             </CardHeader>
             <CardContent>
               {{
-                "chart": <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />,
-                "table": <div>Table view is not implemented yet.</div>
+                chart: <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />,
+                table: <div>Table view is not implemented yet.</div>
               }[historyShowStyle]}
             </CardContent>
           </Card>
