@@ -263,7 +263,13 @@ export function RankHistoryTable({ songId, chartType, dateFrom, dateTo }: TableP
     )
   );
   const tableRows = history.data ? Object.values(
-    history.data.entry.snapshots.reduce<
+    history.data.entry.snapshots
+    .filter((snapshot) => {
+      const snapshotDate = new Date(snapshot.rank_day);
+      return snapshotDate >= new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0)
+        && snapshotDate <= new Date(dateTo.getFullYear(), dateTo.getMonth(), dateTo.getDate(), 23, 59, 59);
+    })
+    .reduce<
       Record<
         string,
         {
