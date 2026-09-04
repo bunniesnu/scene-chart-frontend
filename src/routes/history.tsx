@@ -93,7 +93,7 @@ function RouteComponent() {
                 </span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="max-h-[calc(100dvh-20rem)] overflow-auto">
               {{
                 chart: <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />,
                 table: <RankHistoryTable songId={selectedTableSong} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />
