@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/charts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Chart */
+        get: operations["get_chart_charts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/charts/{chart_type}": {
         parameters: {
             query?: never;
@@ -127,6 +144,13 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** SongChartResponse */
+        SongChartResponse: {
+            /** Song Id */
+            song_id: string;
+            /** Snapshots */
+            snapshots: components["schemas"]["SongChartSnapshotResponse"][];
         };
         /** SongChartSnapshotResponse */
         SongChartSnapshotResponse: {
@@ -255,6 +279,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ArtistSongsResponse"];
+                };
+            };
+        };
+    };
+    get_chart_charts_get: {
+        parameters: {
+            query: {
+                songId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongChartResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

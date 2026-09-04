@@ -6,6 +6,10 @@ import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/comp
 import { Badge } from '@/components/ui/badge';
 import { formatDate } from 'date-fns';
 import { formatTime } from '@/utils/format';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { TableWithData } from '@/components/table';
+import { chartTypeLabels } from '@/types/chart';
 
 export const Route = createFileRoute('/song/$songId')({
   component: RouteComponent,
@@ -16,6 +20,17 @@ function RouteComponent() {
   const songs = $api.useQuery(
     "get",
     "/artist/songs",
+  )
+  const songChartData = $api.useQuery(
+    "get",
+    "/charts",
+    {
+      params: {
+        query: {
+          songId: songId,
+        }
+      }
+    }
   )
   const song = songs.data?.songs.find((song) => song.song_id === songId)
   if (!song) {
@@ -45,5 +60,36 @@ function RouteComponent() {
         {song.play_time && <ItemDescription>{formatTime(song.play_time)}</ItemDescription>}
       </ItemContent>
     </Item>
+    <Card size="sm" className="w-full">
+      <CardHeader>
+        <CardTitle>
+          <span className="text-lg font-semibold pl-1">
+            Melon
+          </span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {Object.entries(chartTypeLabels).map(([chartType, label]) => (
+                <TableHead key={chartType} className="text-center">{label}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableWithData colSpan={5} isLoading={songChartData.isLoading} error={songChartData.error}>
+              <TableRow>
+              {Object.entries(chartTypeLabels).map(([chartType, _]) => (
+                <TableCell key={chartType} className="text-center">
+                  {songChartData.data?.snapshots.find((chart) => chart.chart_type === chartType)?.current_rank ?? "-"}
+                </TableCell>
+              ))}
+              </TableRow>
+            </TableWithData>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   </div>
 }
