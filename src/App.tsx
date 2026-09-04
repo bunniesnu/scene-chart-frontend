@@ -18,6 +18,15 @@ declare module '@tanstack/react-router' {
   }
 }
 
+function isApiError(error: Error): error is Error & { detail: string } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "detail" in error &&
+    typeof error.detail === "string"
+  );
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -27,6 +36,10 @@ const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: (error) => {
+      if (!isApiError(error)) {
+        console.error("Query error:", error);
+        return;
+      }
       if (error.detail) {
         toast.add({
           type: "error",
