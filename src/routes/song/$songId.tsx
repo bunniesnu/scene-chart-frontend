@@ -56,7 +56,7 @@ function RouteComponent() {
           {song.title}
         </ItemTitle>
         <ItemDescription>{song.album_name}</ItemDescription>
-        {song.issue_date && <ItemDescription>{formatDate(new Date(song.issue_date), "yyyy-MM-dd")}</ItemDescription>}
+        {song.issue_date && <ItemDescription>{formatDate(new Date(song.issue_date.split(".").join("-")), "yyyy-MM-dd")}</ItemDescription>}
         {song.play_time && <ItemDescription>{formatTime(song.play_time)}</ItemDescription>}
       </ItemContent>
     </Item>
