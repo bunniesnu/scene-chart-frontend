@@ -106,24 +106,22 @@ function RouteComponent() {
           />
         </div>
       </div>
-      {chartTypes.map((type) => (
-        <TabsContent key={type} value={type} className="w-full">
-          <Card size="sm" className="w-full">
-            <CardHeader>
-              <CardTitle>
-                <span className="text-lg font-semibold pl-1">
-                  Melon Rank History - {chartTypeLabels[type]}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="max-h-[calc(100dvh-20rem)] overflow-auto">
-              {{
-                chart: <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />,
-                table: <RankHistoryTable songId={selectedTableSong} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />
-              }[historyShowStyle]}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      ))}
+      <TabsContent value={chartType} className="w-full">
+        <Card size="sm" className="w-full">
+          <CardHeader>
+            <CardTitle>
+              <span className="text-lg font-semibold pl-1">
+                Melon Rank History - {chartTypeLabels[chartType]}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="max-h-[calc(100dvh-20rem)] overflow-auto">
+            {{
+              chart: <RankHistoryChart songIds={selectedSongs} chartType={chartType} dateFrom={dateFrom} dateTo={dateTo} />,
+              table: <RankHistoryTable songId={selectedTableSong} chartType={chartType} dateFrom={dateFrom} dateTo={dateTo} />
+            }[historyShowStyle]}
+          </CardContent>
+        </Card>
+      </TabsContent>
     </Tabs>
 }
