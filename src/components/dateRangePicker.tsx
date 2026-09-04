@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useEffect, useState } from "react"
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 
@@ -22,8 +22,13 @@ type DatePickerWithRangeProps = {
 }
 
 export function DatePickerWithRange(props: DatePickerWithRangeProps) {
-  const [from, setFrom] = React.useState<Date>(props.from)
-  const [to, setTo] = React.useState<Date>(props.to)
+  const [from, setFrom] = useState<Date>(props.from)
+  const [to, setTo] = useState<Date>(props.to)
+
+  useEffect(() => {
+    setFrom(props.from)
+    setTo(props.to)
+  }, [props.from, props.to])
 
   return (
     <Field className="w-fit" orientation="horizontal">

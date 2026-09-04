@@ -12,3 +12,5 @@ export const defaultSelectedSongsForHistory: string[] = [
 export const defaultSelectedSongForHistoryTable: string = "37928381"
 
 export const defaultStaleTime: number = 5 * 60 * 1000 // 5 minutes
+
+export const ResceneDebutDate: Date = new Date("2024-03-26T00:00:00+09:00")

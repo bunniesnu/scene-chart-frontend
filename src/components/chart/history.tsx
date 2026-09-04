@@ -22,6 +22,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { getYearWeek } from "@/utils/format";
+import { TableWithData } from "../table";
+import { Spinner } from "@/components/ui/spinner";
 
 type ChartProps = {
   songIds: string[];
@@ -87,6 +90,12 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Chart
       )
     ),
   });
+
+  if (history.some((entry) => entry.isLoading)) {
+    return <div className="w-full h-100 flex items-center justify-center text-gray-400">
+      <div className="w-fit mx-auto flex items-center gap-2"><Spinner />Loading...</div>
+    </div>
+  }
 
   const chartData: ChartDataPoint[] = Object.values(
     history.reduce<
@@ -252,6 +261,9 @@ interface TableWithRankHourProps extends TableProps {
 interface TableDailyProps extends TableProps {
   chartType: Extract<ChartType, "daily">;
 }
+interface TableWeeklyProps extends TableProps {
+  chartType: Extract<ChartType, "weekly">;
+}
 
 export function RankHistoryTable({ songId, chartType, dateFrom, dateTo }: TableProps) {
   if (chartType === "top100" || chartType === "realtime" || chartType === "hot100") {
@@ -264,6 +276,14 @@ export function RankHistoryTable({ songId, chartType, dateFrom, dateTo }: TableP
   }
   if (chartType === "daily") {
     return <RankHistoryTableDaily
+      songId={songId}
+      chartType={chartType}
+      dateFrom={dateFrom}
+      dateTo={dateTo}
+    />
+  }
+  if (chartType === "weekly") {
+    return <RankHistoryTableWeekly
       songId={songId}
       chartType={chartType}
       dateFrom={dateFrom}
@@ -339,23 +359,23 @@ function RankHistoryTableWithRankHour({ songId, chartType, dateFrom, dateTo }: T
       </TableRow>
     </TableHeader>
     <TableBody>
-      {tableRows ? tableRows.map((row) => {
-        const ranksByHour = Object.fromEntries(
-          row.ranks.map((rank) => [rank.rank_hour, rank.rank]),
-        );
-        return (
-          <TableRow key={row.rank_day}>
-            <TableCell className="text-center">{row.rank_day}</TableCell>
-            {Array.from(Array(24).keys()).map((hour) => (
-              <TableCell key={hour} className="text-center">
-                {ranksByHour[hour] ?? "-"}
-              </TableCell>
-            ))}
-          </TableRow>
-        );
-      }) : <TableRow>
-        <TableCell colSpan={25} className="text-center text-gray-400 h-20">No data</TableCell>
-      </TableRow>}
+      <TableWithData colSpan={25} isLoading={history.isLoading} error={history.error}>
+        {tableRows && tableRows.map((row) => {
+          const ranksByHour = Object.fromEntries(
+            row.ranks.map((rank) => [rank.rank_hour, rank.rank]),
+          );
+          return (
+            <TableRow key={row.rank_day}>
+              <TableCell className="text-center">{row.rank_day}</TableCell>
+              {Array.from(Array(24).keys()).map((hour) => (
+                <TableCell key={hour} className="text-center">
+                  {ranksByHour[hour] ?? "-"}
+                </TableCell>
+              ))}
+            </TableRow>
+          );
+        })}
+      </TableWithData>
     </TableBody>
   </Table>
 }
@@ -391,30 +411,80 @@ function RankHistoryTableDaily({ songId, dateFrom, dateTo }: TableDailyProps) {
       </TableRow>
     </TableHeader>
     <TableBody>
-      {streamReports.data ? streamReports.data.snapshots.filter(
-        (snapshot) => {
-          const snapshotDate = new Date(snapshot.report_date);
-          return snapshotDate >= new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0)
-            && snapshotDate <= new Date(dateTo.getFullYear(), dateTo.getMonth(), dateTo.getDate(), 23, 59, 59);
+      <TableWithData colSpan={11} isLoading={streamReports.isLoading} error={streamReports.error}>
+        {streamReports.data && streamReports.data.snapshots.filter(
+          (snapshot) => {
+            const snapshotDate = new Date(snapshot.report_date);
+            return snapshotDate >= new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0)
+              && snapshotDate <= new Date(dateTo.getFullYear(), dateTo.getMonth(), dateTo.getDate(), 23, 59, 59);
+          }
+        ).map((row) => {
+          return (
+            <TableRow key={row.report_date}>
+              <TableCell className="text-center">{formatDate(addDays(new Date(row.report_date), -1), "yyyy-MM-dd")}</TableCell>
+              <TableCell className="text-center">{row.yesterday_rank ? row.yesterday_rank : "-"}</TableCell>
+              <TableCell className="text-center">{row.daily_listener_count ? row.daily_listener_count : "-"}</TableCell>
+              <TableCell className="text-center">{row.male_percent ? `${row.male_percent}%` : "-"}</TableCell>
+              <TableCell className="text-center">{row.female_percent ? `${row.female_percent}%` : "-"}</TableCell>
+              {row.age_percent ? row.age_percent.map((value, index) => (
+                <TableCell key={index} className="text-center">{value !== 0 ? `${value}%` : "-"}</TableCell>
+              )) : Array.from(Array(6).keys()).map((i) => (
+                <TableCell key={i} className="text-center">{"-"}</TableCell>
+              ))}
+            </TableRow>
+          );
+        })}
+      </TableWithData>
+    </TableBody>
+  </Table>
+}
+
+function RankHistoryTableWeekly({ songId, dateFrom, dateTo }: TableWeeklyProps) {
+  const history = useQuery(
+    $api.queryOptions(
+      "get",
+      "/charts/history/{chart_type}",
+      {
+        params: {
+          path: {
+            chart_type: "weekly",
+          },
+          query: {
+            songId: songId,
+          }
         }
-      ).map((row) => {
-        return (
-          <TableRow key={row.report_date}>
-            <TableCell className="text-center">{formatDate(addDays(new Date(row.report_date), -1), "yyyy-MM-dd")}</TableCell>
-            <TableCell className="text-center">{row.yesterday_rank ? row.yesterday_rank : "-"}</TableCell>
-            <TableCell className="text-center">{row.daily_listener_count ? row.daily_listener_count : "-"}</TableCell>
-            <TableCell className="text-center">{row.male_percent ? `${row.male_percent}%` : "-"}</TableCell>
-            <TableCell className="text-center">{row.female_percent ? `${row.female_percent}%` : "-"}</TableCell>
-            {row.age_percent ? row.age_percent.map((value, index) => (
-              <TableCell key={index} className="text-center">{value !== 0 ? `${value}%` : "-"}</TableCell>
-            )) : Array.from(Array(6).keys()).map((i) => (
-              <TableCell key={i} className="text-center">{"-"}</TableCell>
-            ))}
-          </TableRow>
-        );
-      }) : <TableRow>
-        <TableCell colSpan={25} className="text-center text-gray-400 h-20">No data</TableCell>
-      </TableRow>}
+      },
+    )
+  );
+  return <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead className="text-center">Year</TableHead>
+        <TableHead className="text-center">Week</TableHead>
+        <TableHead className="text-center">Rank</TableHead>
+        <TableHead className="text-center">Range</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      <TableWithData colSpan={4} isLoading={history.isLoading} error={history.error}>
+        {history.data && history.data.entry.snapshots.filter(
+          (snapshot) => {
+            const snapshotDate = new Date(snapshot.rank_day);
+            return snapshotDate >= new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0)
+              && snapshotDate <= new Date(dateTo.getFullYear(), dateTo.getMonth(), dateTo.getDate(), 23, 59, 59);
+          }
+        ).map((row) => {
+          const { year, week } = getYearWeek(new Date(row.rank_day));
+          return (
+            <TableRow key={row.rank_day}>
+              <TableCell className="text-center">{year}</TableCell>
+              <TableCell className="text-center">{week}</TableCell>
+              <TableCell className="text-center">{row.current_rank ? row.current_rank : "-"}</TableCell>
+              <TableCell className="text-center">{formatDate(addDays(new Date(row.rank_day), -6), "yyyy-MM-dd")} ~ {formatDate(new Date(row.rank_day), "yyyy-MM-dd")}</TableCell>
+            </TableRow>
+          );
+        })}
+      </TableWithData>
     </TableBody>
   </Table>
 }
