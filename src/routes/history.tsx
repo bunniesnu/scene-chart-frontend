@@ -1,4 +1,4 @@
-import { addWeeks } from "date-fns"
+import { addDays, addWeeks } from "date-fns"
 import { createFileRoute } from '@tanstack/react-router'
 import { chartTypeLabels, chartTypes } from "@/types/chart"
 import {
@@ -12,12 +12,14 @@ import {
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
 import { RankHistoryChart, RankHistoryTable } from '@/components/chart/history';
-import { defaultChartType, defaultSelectedSongForHistoryTable, defaultSelectedSongsForHistory } from '@/const';
+import { defaultChartType, defaultSelectedSongForHistoryTable, defaultSelectedSongsForHistory, ResceneDebutDate } from '@/const';
 import { useState } from 'react';
 import { SongSelectorMultiple, SongSelectorSingle } from '@/components/song/selector';
 import { $api } from '@/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DatePickerWithRange } from '@/components/dateRangePicker';
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Button } from "@/components/ui/button";
 
 type HistoryShowStyleType = "chart" | "table"
 const HistoryShowStyles: HistoryShowStyleType[] = ["chart", "table"]
@@ -76,12 +78,28 @@ function RouteComponent() {
             }}
           />,
         }[historyShowStyle]}
-        <DatePickerWithRange
-          from={dateFrom}
-          to={dateTo}
-          onFromChange={setDateFrom}
-          onToChange={setDateTo}
-        />
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          <ButtonGroup>
+            <Button variant="outline" onClick={() => {
+              setDateFrom(addDays(new Date(), -3))
+              setDateTo(new Date())
+            }}>3 days</Button>
+            <Button variant="outline" onClick={() => {
+              setDateFrom(addWeeks(new Date(), -1))
+              setDateTo(new Date())
+            }}>7 days</Button>
+            <Button variant="outline" onClick={() => {
+              setDateFrom(ResceneDebutDate)
+              setDateTo(new Date())
+            }}>All time</Button>
+          </ButtonGroup>
+          <DatePickerWithRange
+            from={dateFrom}
+            to={dateTo}
+            onFromChange={setDateFrom}
+            onToChange={setDateTo}
+          />
+        </div>
       </div>
       {chartTypes.map((type) => (
         <TabsContent key={type} value={type} className="w-full">
