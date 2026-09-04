@@ -18,12 +18,14 @@ import { Badge } from "@/components/ui/badge";
 import { getChartRankAt } from "@/utils/format"
 import { getImgUrl } from "@/utils/img";
 import { TableWithData } from "@/components/table";
+import { useNavigate } from "@tanstack/react-router";
 
 type ChartTableProps = {
   chartType: ChartType;
 };
 
 function ChartTable(chartTableProps: ChartTableProps) {
+  const navigate = useNavigate();
   const { data, isLoading, error } = $api.useQuery(
     "get",
     "/charts/{chart_type}",
@@ -69,7 +71,7 @@ function ChartTable(chartTableProps: ChartTableProps) {
                   </Badge>
                 }
                 return (
-                  <TableRow key={item.song.song_id}>
+                  <TableRow key={item.song.song_id} onClick={() => navigate({ to: "/song/$songId", params: { songId: item.song.song_id } })} className="cursor-pointer">
                     <TableCell className="text-center text-lg">{item.snapshot.current_rank}</TableCell>
                     <TableCell className="flex items-center gap-2">
                       {item.song.album_cover_url && <img src={getImgUrl(item.song.album_cover_url)} className="inline-block w-10 h-10 rounded-md" />}
