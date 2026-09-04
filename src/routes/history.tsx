@@ -1,6 +1,6 @@
 import { addDays, addWeeks } from "date-fns"
 import { createFileRoute } from '@tanstack/react-router'
-import { chartTypeLabels, chartTypes } from "@/types/chart"
+import { chartTypeLabels, chartTypes, isChartType, type ChartType } from "@/types/chart"
 import {
   Tabs,
   TabsContent,
@@ -29,10 +29,15 @@ const HistoryShowStyleLabels: Record<HistoryShowStyleType, string> = {
 }
 
 export const Route = createFileRoute('/history')({
+  validateSearch: (search) => ({
+    chartType: isChartType(search.chartType) ? search.chartType : defaultChartType
+  }),
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const { chartType } = Route.useSearch()
+  const navigate = Route.useNavigate()
   const songs = $api.useQuery(
     "get",
     "/artist/songs",
@@ -42,7 +47,7 @@ function RouteComponent() {
   const [selectedSongs, setSelectedSongs] = useState<string[]>(defaultSelectedSongsForHistory)
   const [historyShowStyle, setHistoryShowStyle] = useState<HistoryShowStyleType>("chart")
   const [selectedTableSong, setSelectedTableSong] = useState<string>(defaultSelectedSongForHistoryTable)
-  return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
+  return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" value={chartType} onValueChange={(value: ChartType) => navigate({ search: { chartType: value } })}>
       <TabsList>
         {chartTypes.map((type) => (
           <TabsTrigger key={type} value={type}>

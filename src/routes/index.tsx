@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import ChartTable from "@/components/chart/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { chartTypeLabels, chartTypes, isChartType } from "@/types/chart"
+import { chartTypeLabels, chartTypes, isChartType, type ChartType } from "@/types/chart"
 import { defaultChartType } from '@/const';
 
 export const Route = createFileRoute('/')({
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/')({
 function Index() {
   const { chartType } = Route.useSearch()
   const navigate = Route.useNavigate()
-  return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" value={chartType} onValueChange={(value) => navigate({ search: { chartType: value } })}>
+  return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" value={chartType} onValueChange={(value: ChartType) => navigate({ search: { chartType: value } })}>
     <TabsList>
       {chartTypes.map((type) => (
         <TabsTrigger key={type} value={type}>
