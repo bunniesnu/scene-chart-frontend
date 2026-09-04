@@ -17,6 +17,7 @@ import { Triangle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { getChartRankAt } from "@/utils/format"
 import { getImgUrl } from "@/utils/img";
+import { LoadingSpinnerForTable } from "@/components/loading-spinner";
 
 type ChartTableProps = {
   chartType: ChartType;
@@ -51,9 +52,7 @@ function ChartTable(chartTableProps: ChartTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? <TableRow>
-              <TableCell colSpan={3} className="text-center text-gray-400 h-20">Loading...</TableCell>
-            </TableRow> : (error ? <TableRow>
+            {isLoading ? <LoadingSpinnerForTable colSpan={3} /> : (error ? <TableRow>
                 <TableCell colSpan={3} className="text-center text-gray-400 h-20">Error</TableCell>
               </TableRow> : (data ? data.entries.map((item, _) => {
                 let rankChangeBadge = <Badge className="bg-gray-200 text-gray-400 dark:bg-gray-800 text-sm text-center min-w-11">
