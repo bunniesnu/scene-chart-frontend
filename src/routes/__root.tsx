@@ -24,6 +24,7 @@ function RootComponent() {
               activeProps={{
                 className: "bg-accent text-accent-foreground",
               }}
+              search={{ chartType: "top100" }}
             >
               Home
             </Link>
@@ -35,6 +36,7 @@ function RootComponent() {
               activeProps={{
                 className: "bg-accent text-accent-foreground",
               }}
+              search={{ chartType: "top100" }}
             >
               History
             </Link>

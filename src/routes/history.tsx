@@ -1,6 +1,6 @@
 import { addDays, addWeeks } from "date-fns"
 import { createFileRoute } from '@tanstack/react-router'
-import { chartTypeLabels, chartTypes } from "@/types/chart"
+import { chartTypeLabels, chartTypes, isChartType, type ChartType } from "@/types/chart"
 import {
   Tabs,
   TabsContent,
@@ -29,10 +29,15 @@ const HistoryShowStyleLabels: Record<HistoryShowStyleType, string> = {
 }
 
 export const Route = createFileRoute('/history')({
+  validateSearch: (search) => ({
+    chartType: isChartType(search.chartType) ? search.chartType : defaultChartType
+  }),
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const { chartType } = Route.useSearch()
+  const navigate = Route.useNavigate()
   const songs = $api.useQuery(
     "get",
     "/artist/songs",
@@ -42,7 +47,7 @@ function RouteComponent() {
   const [selectedSongs, setSelectedSongs] = useState<string[]>(defaultSelectedSongsForHistory)
   const [historyShowStyle, setHistoryShowStyle] = useState<HistoryShowStyleType>("chart")
   const [selectedTableSong, setSelectedTableSong] = useState<string>(defaultSelectedSongForHistoryTable)
-  return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" defaultValue={defaultChartType}>
+  return <Tabs className="w-full flex flex-col items-center justify-center gap-4 p-4" value={chartType} onValueChange={(value: ChartType) => navigate({ search: { chartType: value } })}>
       <TabsList>
         {chartTypes.map((type) => (
           <TabsTrigger key={type} value={type}>
@@ -101,24 +106,22 @@ function RouteComponent() {
           />
         </div>
       </div>
-      {chartTypes.map((type) => (
-        <TabsContent key={type} value={type} className="w-full">
-          <Card size="sm" className="w-full">
-            <CardHeader>
-              <CardTitle>
-                <span className="text-lg font-semibold pl-1">
-                  Melon Rank History - {chartTypeLabels[type]}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="max-h-[calc(100dvh-20rem)] overflow-auto">
-              {{
-                chart: <RankHistoryChart songIds={selectedSongs} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />,
-                table: <RankHistoryTable songId={selectedTableSong} chartType={type} dateFrom={dateFrom} dateTo={dateTo} />
-              }[historyShowStyle]}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      ))}
+      <TabsContent value={chartType} className="w-full">
+        <Card size="sm" className="w-full">
+          <CardHeader>
+            <CardTitle>
+              <span className="text-lg font-semibold pl-1">
+                Melon Rank History - {chartTypeLabels[chartType]}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="max-h-[calc(100dvh-20rem)] overflow-auto">
+            {{
+              chart: <RankHistoryChart songIds={selectedSongs} chartType={chartType} dateFrom={dateFrom} dateTo={dateTo} />,
+              table: <RankHistoryTable songId={selectedTableSong} chartType={chartType} dateFrom={dateFrom} dateTo={dateTo} />
+            }[historyShowStyle]}
+          </CardContent>
+        </Card>
+      </TabsContent>
     </Tabs>
 }

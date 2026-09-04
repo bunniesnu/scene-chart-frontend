@@ -1,9 +1,10 @@
 import {
+  QueryCache,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query"
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { Toaster } from "@/components/ui/toast"
+import { toast, Toaster } from "@/components/ui/toast"
 
 import { routeTree } from '@/routeTree.gen'
 import { ThemeProvider } from "@/components/theme-provider";
@@ -17,6 +18,15 @@ declare module '@tanstack/react-router' {
   }
 }
 
+function isApiError(error: Error): error is Error & { detail: string } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "detail" in error &&
+    typeof error.detail === "string"
+  );
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -24,6 +34,22 @@ const queryClient = new QueryClient({
       retry: 0,
     },
   },
+  queryCache: new QueryCache({
+    onError: (error) => {
+      if (!isApiError(error)) {
+        console.error("Query error:", error);
+        return;
+      }
+      if (error.detail) {
+        toast.add({
+          type: "error",
+          description: error.detail,
+          priority: "low",
+        })
+      }
+      console.log("Query error:", error.detail);
+    },
+  }),
 })
 
 function App() {
