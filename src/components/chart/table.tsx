@@ -71,9 +71,12 @@ function ChartTable(chartTableProps: ChartTableProps) {
                 return (
                   <TableRow key={item.song.song_id}>
                     <TableCell className="text-center text-lg">{item.snapshot.current_rank}</TableCell>
-                    <TableCell>
-                      {item.song.album_cover_url && <img src={getImgUrl(item.song.album_cover_url)} className="inline-block mr-2 w-10 h-10 rounded-md" />}
-                      {item.song.title}
+                    <TableCell className="flex items-center gap-2">
+                      {item.song.album_cover_url && <img src={getImgUrl(item.song.album_cover_url)} className="inline-block w-10 h-10 rounded-md" />}
+                      <div className="flex flex-col items-start">
+                        <span>{item.song.title}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{item.song.album_name}</span>
+                      </div>
                     </TableCell>
                     <TableCell className="text-center">
                       {rankChangeBadge}

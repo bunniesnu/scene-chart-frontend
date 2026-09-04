@@ -167,6 +167,8 @@ export interface components {
             title: string;
             /** Album Id */
             album_id: string | null;
+            /** Album Name */
+            album_name: string | null;
             /** Album Cover Url */
             album_cover_url: string | null;
             /** Play Time */
