@@ -461,8 +461,8 @@ function RankHistoryTableWeekly({ songId, dateFrom, dateTo }: TableWeeklyProps) 
       <TableRow>
         <TableHead className="text-center">Year</TableHead>
         <TableHead className="text-center">Week</TableHead>
-        <TableHead className="text-center">Range</TableHead>
         <TableHead className="text-center">Rank</TableHead>
+        <TableHead className="text-center">Range</TableHead>
       </TableRow>
     </TableHeader>
     <TableBody>
