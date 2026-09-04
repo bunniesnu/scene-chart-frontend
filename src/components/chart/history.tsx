@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/table"
 import { getYearWeek } from "@/utils/format";
 import { TableWithData } from "../table";
+import { Spinner } from "@/components/ui/spinner";
 
 type ChartProps = {
   songIds: string[];
@@ -176,6 +177,12 @@ export function RankHistoryChart({ songIds, chartType, dateFrom, dateTo }: Chart
   );
 
   const showChartTime = chartType !== "daily" && chartType !== "weekly";
+
+  if (history.some((entry) => entry.isLoading)) {
+    return <div className="w-full h-100 flex items-center justify-center text-gray-400">
+      <div className="w-fit mx-auto flex items-center gap-2"><Spinner />Loading...</div>
+    </div>
+  }
 
   return (
     <ChartContainer
