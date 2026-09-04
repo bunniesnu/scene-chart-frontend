@@ -1,17 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import ChartTable from "@/components/chart/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { chartTypeLabels, chartTypes, type ChartType } from "@/types/chart"
+import { chartTypeLabels, chartTypes, isChartType } from "@/types/chart"
 import { defaultChartType } from '@/const';
 
 export const Route = createFileRoute('/')({
-  validateSearch: (search) => {
-    return {
-      chartType: chartTypes.includes(search.chartType as ChartType)
-        ? (search.chartType as ChartType)
-        : defaultChartType,
-    }
-  },
+  validateSearch: (search) => ({
+    chartType: isChartType(search.chartType) ? search.chartType : defaultChartType
+  }),
   component: Index,
 })
 

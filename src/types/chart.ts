@@ -15,3 +15,6 @@ export const chartTypeLabels: Record<ChartType, string> = {
   daily: "Daily",
   weekly: "Weekly",
 }
+
+export const isChartType = (value: unknown): value is ChartType =>
+  typeof value === "string" && chartTypes.includes(value as ChartType)
