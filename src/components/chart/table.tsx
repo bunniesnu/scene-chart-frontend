@@ -56,16 +56,16 @@ function ChartTable(chartTableProps: ChartTableProps) {
             </TableRow> : (error ? <TableRow>
                 <TableCell colSpan={3} className="text-center text-gray-400 h-20">Error</TableCell>
               </TableRow> : (data ? data.entries.map((item, _) => {
-                let rankChangeBadge = <Badge className="bg-gray-200 text-gray-400 text-sm text-center min-w-11">
+                let rankChangeBadge = <Badge className="bg-gray-200 text-gray-400 dark:bg-gray-800 text-sm text-center min-w-11">
                   -
                 </Badge>
                 if (item.snapshot.rank_type === "UP") {
-                  rankChangeBadge = <Badge className="bg-red-200 text-red-400 text-sm text-center min-w-11">
+                  rankChangeBadge = <Badge className="bg-red-200 text-red-400 dark:bg-red-900 text-sm text-center min-w-11">
                     <Triangle fill="currentColor" />
                     {item.snapshot.rank_gap}
                   </Badge>
                 } else if (item.snapshot.rank_type === "DOWN") {
-                  rankChangeBadge = <Badge className="bg-green-200 text-green-400 text-sm text-center min-w-11">
+                  rankChangeBadge = <Badge className="bg-green-200 text-green-400 dark:bg-green-900 text-sm text-center min-w-11">
                     <Triangle fill="currentColor" className="rotate-180" />
                     {item.snapshot.rank_gap}
                   </Badge>
