@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-
+import { ArrowUpRightIcon } from "lucide-react"
 import { $api } from '@/api';
 import { getImgUrl } from '@/utils/img';
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/components/ui/item';
@@ -63,9 +63,12 @@ function RouteComponent() {
     <Card size="sm" className="w-full">
       <CardHeader>
         <CardTitle>
-          <span className="text-lg font-semibold pl-1">
-            Melon
-          </span>
+          <a href={`https://www.melon.com/song/detail.htm?songId=${song.song_id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+            <span className="text-lg font-semibold pl-1">
+              Melon
+            </span>
+            <ArrowUpRightIcon className="w-4 h-4" />
+          </a>
         </CardTitle>
       </CardHeader>
       <CardContent>
